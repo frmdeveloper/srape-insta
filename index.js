@@ -73,7 +73,7 @@ module.exports =  {
 									url: content['node']['display_url'],
 									type: content['node']['is_video'] ? 'video' : 'photo'
 								}))
-						})
+						});
 						break;
 				}
 			} catch(e){ throw new Error('Instagram parsing error'); }
