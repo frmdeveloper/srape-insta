@@ -36,9 +36,10 @@ module.exports =  {
 			if(res.statusCode === 404)
 				throw new Error('Instagram post not found');
 			body += `<script>document.querySelector('html').innerHTML = JSON.stringify(_sharedData.entry_data.PostPage[0].graphql.shortcode_media)</script>`;
+			let p = null;
 			try {
 				const post = JSON.parse(parse(body).body.textContent);
-				const p = {
+				p = {
 					id: post['id'],
 					timestamp: post['taken_at_timestamp'],
 					likes: post['edge_media_preview_like']['count'],
@@ -58,22 +59,25 @@ module.exports =  {
 				};
 				switch(post['__typename']){
 					case 'GraphImage':
-						callback(Object.assign(p, {
-							type: post['is_video'] ? 'video': 'photo',
-							contents: [ post['display_url'] ],
-						}));
+						Object.assign(p, {
+							contents: [{
+								url: post['display_url'],
+								type: post['is_video'] ? 'video': 'photo'
+							}],
+						});
 						break;
 					case 'GraphSidecar':
-						callback(Object.assign(p, {
+						Object.assign(p, {
 							contents: post['edge_sidecar_to_children']['edges']
 								.map(content => ({
 									url: content['node']['display_url'],
 									type: content['node']['is_video'] ? 'video' : 'photo'
 								}))
-						}));
+						})
 						break;
 				}
 			} catch(e){ throw new Error('Instagram parsing error'); }
+			callback(p);
 		});
 	}
 };
