@@ -37,7 +37,7 @@ Insta.getProfile('tiana_kaki', profile => {
 ```js
 Insta.getPost('Buth7q-nTnW', post => {
 	console.log(post);
-})
+});
 ```
 
 ```json
