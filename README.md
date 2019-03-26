@@ -53,10 +53,10 @@ Insta.getPost('Buth7q-nTnW', post => {
 	},
 	"author": {
 		"id": "6965336095",
-		"verified": false,
-		"pic": "https://scontent-mrs1-1.cdninstagram.com/....jpg",
 		"username": "tiana_kaki",
-		"name": "Tiana"
+		"name": "Tiana",
+		"pic": "https://scontent-mrs1-1.cdninstagram.com/....jpg",
+		"verified": false
 	},
 	"contents": [
 		{

@@ -50,10 +50,10 @@ module.exports =  {
 					} : null,
 					author: {
 						id: post['owner']['id'],
-						verified: post['owner']['is_verified'],
-						pic: post['owner']['profile_pic_url'],
 						username: post['owner']['username'],
-						name: post['owner']['full_name']
+						name: post['owner']['full_name'],
+						pic: post['owner']['profile_pic_url'],
+						verified: post['owner']['is_verified']
 					}
 				};
 				switch(post['__typename']){
