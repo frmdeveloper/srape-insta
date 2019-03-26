@@ -1,5 +1,5 @@
 {
-  "name": "ig-scraper",
+  "name": "@kaki87/ig-scraper",
   "version": "1.0.0",
   "description": "Instagrap scraper without authenticated API",
   "keywords": ["insta", "instagram", "ig", "scraper", "ig-scraper", "instagrap-scraper", "api", "scraper"],
@@ -18,5 +18,8 @@
   "dependencies": {
     "jsdom": "^14.0.0",
     "requestretry": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
