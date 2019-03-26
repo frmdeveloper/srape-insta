@@ -14,22 +14,22 @@ Insta.getProfile('tiana_kaki', profile => {
 
 ```json
 {
-		"id": "6965336095",
-		"name": "Tiana",
-		"pic": "https://scontent-mrs1-1.cdninstagram.com/....jpg",
-		"bio": "",
-		"private": false,
-		"verified": false,
-		"website": "https://tianalemesle.fr/",
-		"followers": 46,
-		"following": 68,
-		"posts": 35,
-		"lastPosts": [
-			"Buth7q-nTnW",
-			"BtwBWbmnXtx",
-			"BtHJSmMhiDY"
-		]
-    }
+	"id": "6965336095",
+	"name": "Tiana",
+	"pic": "https://scontent-mrs1-1.cdninstagram.com/....jpg",
+	"bio": "",
+	"private": false,
+	"verified": false,
+	"website": "https://tianalemesle.fr/",
+	"followers": 46,
+	"following": 68,
+	"posts": 35,
+	"lastPosts": [
+		"Buth7q-nTnW",
+		"BtwBWbmnXtx",
+		"BtHJSmMhiDY"
+	]
+}
 ```
 
 ### Get post data
