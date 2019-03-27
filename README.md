@@ -18,6 +18,7 @@ Insta.getProfile('tiana_kaki')
 	"pic": "https://scontent-cdt1-1.cdninstagram.com/vp/80bb9aba4916b94a1eec374211a28250/5D2F4763/t51.2885-19/s320x320/26268757_235337373674020_3943053532785016832_n.jpg?_nc_ht=scontent-cdt1-1.cdninstagram.com",
 	"bio": "",
 	"private": false,
+	"access": true,
 	"verified": false,
 	"website": "https://tianalemesle.fr/",
 	"followers": 46,
@@ -400,3 +401,4 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 * `1.0.4` (2019-03-27) • Added improvements & features
 	- Fixed video post thumbnail & views count
 	- Using promises & observable
+* `1.0.5` (2019-03-27) • Added proper error for private accounts

@@ -23,6 +23,7 @@ module.exports =  {
 					pic: user['profile_pic_url_hd'],
 					bio: user['biography'],
 					private: user['is_private'],
+					access: user['is_private'] ? !!(user['follows_viewer'] && user['followed_by_viewer']) : true,
 					verified: user['is_verified'],
 					website: user['external_url'],
 					followers: user['edge_followed_by']['count'],
@@ -154,6 +155,10 @@ module.exports =  {
 		const checkNewPosts = () => {
 			module.exports.getProfile(username)
 				.then(profile => {
+					if(!profile.access){
+						observer.error('Instagram account access denied');
+						return observer.complete();
+					}
 					const _lastPost = profile.lastPosts[0];
 					if(lastPost && _lastPost !== lastPost){
 						for(let i = 0; i < profile.lastPosts.indexOf(lastPost); i++){
