@@ -77,23 +77,6 @@ module.exports =  {
 					id: post['id'],
 					timestamp: post['taken_at_timestamp'],
 					likes: post['edge_media_preview_like']['count'],
-					location: post['location'] ? {
-						name: post['location']['name'],
-						city: JSON.parse(post['location']['address_json'])['city_name']
-					} : null,
-					caption,
-					hashtags: caption ? caption.match(hashtagsRegex) : null,
-					mentions: caption ? caption.match(usernamesRegex) : null,
-					tagged: post['edge_media_to_tagged_user']['edges']
-						.map(u => u['node']['user']['username']),
-					author: {
-						id: post['owner']['id'],
-						username,
-						name: post['owner']['full_name'],
-						pic: post['owner']['profile_pic_url'],
-						verified: post['owner']['is_verified'],
-						link: `${insta}/${username}`
-					},
 					comments: post['comments_disabled'] ? null : post['edge_media_to_comment']['edges']
 						.map(c => ({
 							user: c['node']['owner']['username'],
@@ -103,6 +86,23 @@ module.exports =  {
 							mentions: c['node']['text'].match(usernamesRegex),
 							likes: c['node']['edge_liked_by']['count']
 						})),
+					caption,
+					hashtags: caption ? caption.match(hashtagsRegex) : null,
+					mentions: caption ? caption.match(usernamesRegex) : null,
+					tagged: post['edge_media_to_tagged_user']['edges']
+						.map(u => u['node']['user']['username']),
+					location: post['location'] ? {
+						name: post['location']['name'],
+						city: JSON.parse(post['location']['address_json'])['city_name']
+					} : null,
+					author: {
+						id: post['owner']['id'],
+						username,
+						name: post['owner']['full_name'],
+						pic: post['owner']['profile_pic_url'],
+						verified: post['owner']['is_verified'],
+						link: `${insta}/${username}`
+					},
 					link
 				};
 				switch(post['__typename']){
