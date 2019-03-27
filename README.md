@@ -206,7 +206,7 @@ Insta.getPost('BrNM6qyHf-3')
 {
 	"id": "2008982632440129163",
 	"timestamp": 1553709476,
-	"likes": 5,
+	"likes": 13,
 	"location": {
 		"name": "Iceland",
 		"city": ""
@@ -251,13 +251,23 @@ Insta.getPost('BrNM6qyHf-3')
 		"verified": false,
 		"link": "https://instagram.com/maychui.pinklemon"
 	},
-	"comments": [],
+	"comments": [
+		{
+			"user": "marchiorato_mattia",
+			"content": "wow🗻!",
+			"timestamp": 1553709890,
+			"hashtags": null,
+			"mentions": null,
+			"likes": 0
+		}
+	],
 	"link": "https://instagram.com/p/BvhVw9mheaL",
 	"contents": [
 		{
 			"type": "video",
 			"url": "https://scontent.cdninstagram.com/vp/1d30eae2e5e85580e5befaba9aaf43c2/5C9E9E51/t50.2886-16/55962538_588721611605761_84285954340159488_n.mp4?_nc_ht=scontent.cdninstagram.com",
-			"thumbnail": "https://scontent-cdt1-1.cdninstagram.com/vp/6aef1ac6aff521e8a29dff6b149e9346/5C9E2A95/t51.2885-15/e35/c157.0.405.405/53683214_165782567645938_5097691082132675200_n.jpg?_nc_ht=scontent-cdt1-1.cdninstagram.com"
+			"thumbnail": "https://scontent-cdt1-1.cdninstagram.com/vp/f9cb516118ed81e259cacc5fefdf8909/5C9EAA10/t51.2885-15/e35/53683214_165782567645938_5097691082132675200_n.jpg?_nc_ht=scontent-cdt1-1.cdninstagram.com",
+			"views": 12
 		}
 	]
 }
@@ -269,7 +279,7 @@ Insta.getPost('BrNM6qyHf-3')
 {
 	"id": "2008985382888489950",
 	"timestamp": 1553709741,
-	"likes": 5,
+	"likes": 17,
 	"location": null,
 	"caption": "🛋🐱\n.\n.\n.\n.\n#funnycats #funnycat #catsofinstagram #cats #cat #funnycatpics #funnycatvideos #funnycatsofinstagram #funnycatsvideo #funnycatvideo #funnycatpictures #funnycatface #funnycatsvideos #funnycatmemes #funnycatvids #funnycatsmeow #funnycatpic #funnycatspics #funnycatvid #funnycatstoday #funnycatinstpic #funnycatsshop #funnycatstory #funnycatselfie #funnycatsleepingpositions #funnycatsmoscow #funnycatshirt #funnycatthings #funny #kittens",
 	"hashtags": [
@@ -321,7 +331,7 @@ Insta.getPost('BrNM6qyHf-3')
 			"type": "video",
 			"url": "https://scontent.cdninstagram.com/vp/100eb60e586b578f65a8aa53ef9589e3/5C9E4EB4/t50.2886-16/56328362_604406173305081_7683737523615411375_n.mp4?_nc_ht=scontent.cdninstagram.com",
 			"thumbnail": "https://scontent-cdt1-1.cdninstagram.com/vp/41f10a09b403451d1ebdddd63971a86f/5C9EACCF/t51.2885-15/e35/54247431_853420891661689_1137107086742199353_n.jpg?_nc_ht=scontent-cdt1-1.cdninstagram.com",
-			"views": 1
+			"views": 9
 		},
 		{
 			"type": "photo",
@@ -386,4 +396,6 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost).subscribe({
 	- Added support for hashtags, mentions and tags in posts and comments
 	- Added posts subscriptions feature from users (untested) and hashtags
 * `1.0.2` (2019-03-27) • Added support for videos
-* `1.0.3` (2019-03-27) • Using promises & observable
+* `1.0.3` (2019-03-27) • Added improvements & features
+	- Fixed video post thumbnail & views count
+	- Using promises & observable

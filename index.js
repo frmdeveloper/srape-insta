@@ -126,7 +126,8 @@ module.exports =  {
 							contents: [{
 								type: 'video',
 								url: post['video_url'],
-								thumbnail: post['thumbnail_src'],
+								thumbnail: post['display_url'],
+								views: post['video_view_count']
 							}]
 						});
 						break;
