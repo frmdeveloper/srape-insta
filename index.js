@@ -128,8 +128,9 @@ module.exports =  {
 							contents: post['edge_sidecar_to_children']['edges']
 								.map(content => ({
 									type: content['node']['is_video'] ? 'video' : 'photo',
-									url: content['node']['display_url'],
-									thumbnail: content['node']['is_video'] ? post['thumbnail_src'] : null
+									url: content['node']['is_video'] ? content['node']['video_url'] : content['node']['display_url'],
+									thumbnail: content['node']['is_video'] ? content['node']['display_url'] : null,
+									views: content['node']['is_video'] ? content['node']['video_view_count'] : null
 								}))
 						});
 						break;
