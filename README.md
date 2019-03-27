@@ -365,17 +365,18 @@ Insta.subscribeUserPosts('tiana_kaki', interval, lastPost)
 #### From hashtag
 
 ```js
-Insta.subscribeHashtagPosts('cat', interval, lastPost).subscribe({
-	next: post => {
-		Insta.getPost(post)
-			.then(post => {
-				console.log(post);
-			});
-	},
-	error: err => {
-		console.log(err);
-	}
-});
+Insta.subscribeHashtagPosts('cat', interval, lastPost)
+	.subscribe({
+		next: post => {
+			Insta.getPost(post)
+				.then(post => {
+					console.log(post);
+				});
+		},
+		error: err => {
+			console.log(err);
+		}
+	});
 ```
 
 - `interval` : *(optional)* time in seconds between requests. **Default : 30**
