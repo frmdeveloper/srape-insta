@@ -1,6 +1,6 @@
 {
   "name": "@kaki87/ig-scraper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Instagram scraper without authenticated API",
   "keywords": [
     "insta",
