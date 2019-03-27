@@ -109,17 +109,27 @@ module.exports =  {
 					case 'GraphImage':
 						Object.assign(p, {
 							contents: [{
-								url: post['display_url'],
-								type: post['is_video'] ? 'video': 'photo'
+								type: 'photo',
+								url: post['display_url']
 							}],
+						});
+						break;
+					case 'GraphVideo':
+						Object.assign(p, {
+							contents: [{
+								type: 'video',
+								url: post['video_url'],
+								thumbnail: post['thumbnail_src'],
+							}]
 						});
 						break;
 					case 'GraphSidecar':
 						Object.assign(p, {
 							contents: post['edge_sidecar_to_children']['edges']
 								.map(content => ({
+									type: content['node']['is_video'] ? 'video' : 'photo',
 									url: content['node']['display_url'],
-									type: content['node']['is_video'] ? 'video' : 'photo'
+									thumbnail: content['node']['is_video'] ? post['thumbnail_src'] : null
 								}))
 						});
 						break;
