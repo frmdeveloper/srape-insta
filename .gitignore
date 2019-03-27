@@ -78,3 +78,6 @@ typings/
 
 # JetBrains
 .idea
+
+# Tests folder
+tests
