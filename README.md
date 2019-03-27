@@ -374,7 +374,7 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 				});
 		},
 		error: err => {
-			console.log(err);
+			console.error(err);
 		}
 	});
 ```
