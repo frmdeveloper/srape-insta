@@ -1,6 +1,6 @@
 {
   "name": "@kaki87/ig-scraper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Instagrap scraper without authenticated API",
   "keywords": ["insta", "instagram", "ig", "scraper", "ig-scraper", "instagrap-scraper", "api", "scraper"],
   "homepage": "https://git.kaki87.net/KaKi87/ig-scraper",

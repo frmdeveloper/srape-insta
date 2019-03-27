@@ -240,10 +240,11 @@ Insta.subscribeHashtagPosts('selfie', posts => {
 
 ## Changelog
 
-- `1.0.0` (2019-03-26) - Initial release
-- `1.0.1` (2019-03-27) - Added improvements & features
+* `1.0.0` (2019-03-26) • Initial release
+* `1.0.1` (2019-03-27) • Added improvements & features
 	- Fixed throw error scope
 	- Fixed single photo post wrongly structured
 	- Added support for comments
 	- Added support for hashtags, mentions and tags in posts and comments
 	- Added posts subscriptions feature from users (untested) and hashtags
+* `1.0.2` (2019-03-27) • Added support for videos
