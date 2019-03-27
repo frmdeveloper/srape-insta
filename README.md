@@ -248,3 +248,4 @@ Insta.subscribeHashtagPosts('selfie', posts => {
 	- Added support for hashtags, mentions and tags in posts and comments
 	- Added posts subscriptions feature from users (untested) and hashtags
 * `1.0.2` (2019-03-27) • Added support for videos
+* `1.0.3` (2019-03-27) • Using promises & observable

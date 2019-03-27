@@ -3,15 +3,16 @@
 const
 	request = require('requestretry'),
 	JSDOM = require('jsdom').JSDOM,
+	Observable = require('zen-observable'),
 	parse = document => new JSDOM(document, { runScripts: "dangerously" }).window.document,
 	insta = 'https://instagram.com';
 
 module.exports =  {
-	getProfile(username, callback){
-		const link = `${insta}/${username}`;
-		request(link,(err, res, body) => {
+	getProfile: username => new Promise((resolve, reject) => {
+		const link = `${ insta }/${ username }`;
+		request(link, (err, res, body) => {
 			if(res.statusCode === 404)
-				throw new Error('Instagram user not found');
+				return reject('Instagram user not found');
 			body += `<script>document.querySelector('html').innerHTML = JSON.stringify(_sharedData.entry_data.ProfilePage[0].graphql.user)</script>`;
 			let u;
 			try {
@@ -31,15 +32,18 @@ module.exports =  {
 						.map(post => post['node']['shortcode']),
 					link
 				};
-			} catch(e){ throw new Error('Instagram parsing error'); }
-			callback(u);
+			} catch(_) {
+			}
+			if(!u)
+				return reject('Instagram parsing error');
+			resolve(u);
 		});
-	},
-	getHashtag(hashtag, callback){
-		const link = `${insta}/explore/tags/${hashtag}/`;
+	}),
+	getHashtag: hashtag => new Promise((resolve, reject) => {
+		const link = `${ insta }/explore/tags/${ hashtag }/`;
 		request(link, (err, res, body) => {
 			if(res.statusCode === 404)
-				throw new Error('Instagram hashtag not found');
+				return reject('Instagram hashtag not found');
 			body += `<script>document.querySelector('html').innerHTML = JSON.stringify(_sharedData.entry_data.TagPage[0].graphql.hashtag)</script>`;
 			let h;
 			try {
@@ -54,15 +58,18 @@ module.exports =  {
 						.map(post => post['node']['shortcode']),
 					link
 				}
-			} catch(e){ throw new Error('Instagram parsing error'); }
-			callback(h);
+			} catch(_) {
+			}
+			if(!h)
+				return reject('Instagram parsing error');
+			resolve(h);
 		});
-	},
-	getPost(shortcode, callback){
-		const link = `${insta}/p/${shortcode}`;
+	}),
+	getPost: shortcode => new Promise((resolve, reject) => {
+		const link = `${ insta }/p/${ shortcode }`;
 		request(link, (err, res, body) => {
 			if(res.statusCode === 404)
-				throw new Error('Instagram post not found');
+				return reject('Instagram post not found');
 			body += `<script>document.querySelector('html').innerHTML = JSON.stringify(_sharedData.entry_data.PostPage[0].graphql.shortcode_media)</script>`;
 			let p;
 			try {
@@ -92,7 +99,7 @@ module.exports =  {
 						name: post['owner']['full_name'],
 						pic: post['owner']['profile_pic_url'],
 						verified: post['owner']['is_verified'],
-						link: `${insta}/${username}`
+						link: `${ insta }/${ username }`
 					},
 					comments: post['comments_disabled'] ? null : post['edge_media_to_comment']['edges']
 						.map(c => ({
@@ -135,65 +142,49 @@ module.exports =  {
 						});
 						break;
 				}
-			} catch(e){ throw new Error('Instagram parsing error'); }
-			callback(p);
+			} catch(_) {
+			}
+			if(!p)
+				return reject('Instagram parsing error');
+			resolve(p);
 		});
-	},
-	subscribeUserPosts(username, onPosts, options){
-		const interval = options['interval'] || 30;
-		let lastPost = options['lastPost'] || null;
+	}),
+	subscribeUserPosts: (username, interval, lastPost) => new Observable(observer => {
 		const checkNewPosts = () => {
-			module.exports.getProfile(username, profile => {
-				const _lastPost = profile.lastPosts[0];
-				if(_lastPost !== lastPost){
-					lastPost = _lastPost;
-					if(!_lastPost){
-						onPosts(lastPost);
-						setTimeout(checkNewPosts, interval);
-					}
-					else {
-						const posts = [];
+			module.exports.getProfile(username)
+				.then(profile => {
+					const _lastPost = profile.lastPosts[0];
+					if(lastPost && _lastPost !== lastPost){
 						for(let i = 0; i < profile.lastPosts.indexOf(lastPost); i++){
-							posts.push(profile.lastPosts[i]);
+							observer.next(profile.lastPosts[i]);
 						}
-						onPosts(posts);
-						setTimeout(checkNewPosts, interval);
 					}
+					setTimeout(checkNewPosts, interval || 30);
 					lastPost = _lastPost;
-				}
-				else {
-					setTimeout(checkNewPosts, interval);
-				}
-			});
+				})
+				.catch(err => {
+					observer.error(err);
+				});
 		};
 		checkNewPosts();
-	},
-	subscribeHashtagPosts(hashtag, onPosts, options){
-		const interval = options['interval'] || 30;
-		let lastPost = options['lastPost'] || null;
+	}),
+	subscribeHashtagPosts: (hashtag, interval, lastPost) => new Observable(observer => {
 		const checkNewPosts = () => {
-			module.exports.getHashtag(hashtag, hashtag => {
-				const _lastPost = hashtag.lastPosts[0];
-				if(_lastPost !== lastPost){
-					if(!_lastPost){
-						onPosts(lastPost);
-						setTimeout(checkNewPosts, interval);
-					}
-					else {
-						const posts = [];
+			module.exports.getHashtag(hashtag)
+				.then(hashtag => {
+					const _lastPost = hashtag.lastPosts[0];
+					if(lastPost && _lastPost !== lastPost){
 						for(let i = 0; i < hashtag.lastPosts.indexOf(lastPost); i++){
-							posts.push(hashtag.lastPosts[i]);
+							observer.next(hashtag.lastPosts[i]);
 						}
-						onPosts(posts);
-						setTimeout(checkNewPosts, interval);
 					}
+					setTimeout(checkNewPosts, interval || 30);
 					lastPost = _lastPost;
-				}
-				else {
-					setTimeout(checkNewPosts, interval);
-				}
-			});
+				})
+				.catch(err => {
+					observer.error(err);
+				});
 		};
 		checkNewPosts();
-	}
+	})
 };

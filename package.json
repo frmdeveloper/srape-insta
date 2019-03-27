@@ -1,8 +1,17 @@
 {
   "name": "@kaki87/ig-scraper",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Instagram scraper without authenticated API",
-  "keywords": ["insta", "instagram", "ig", "scraper", "ig-scraper", "instagrap-scraper", "api", "scraper"],
+  "keywords": [
+    "insta",
+    "instagram",
+    "ig",
+    "scraper",
+    "ig-scraper",
+    "instagrap-scraper",
+    "api",
+    "scraper"
+  ],
   "homepage": "https://git.kaki87.net/KaKi87/ig-scraper",
   "license": "MIT",
   "author": {
@@ -17,7 +26,8 @@
   },
   "dependencies": {
     "jsdom": "^14.0.0",
-    "requestretry": "^4.0.0"
+    "requestretry": "^4.0.0",
+    "zen-observable": "^0.8.13"
   },
   "publishConfig": {
     "access": "public"
