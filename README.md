@@ -368,8 +368,8 @@ Insta.subscribeUserPosts('tiana_kaki', interval, lastPost)
 ```js
 Insta.subscribeHashtagPosts('cat', interval, lastPost)
 	.subscribe({
-		next: post => {
-			Insta.getPost(post)
+		next: shortcode => {
+			Insta.getPost(shortcode)
 				.then(post => {
 					console.log(post);
 				});
