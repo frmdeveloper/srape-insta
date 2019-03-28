@@ -23,7 +23,7 @@ module.exports =  {
 					pic: user['profile_pic_url_hd'],
 					bio: user['biography'],
 					private: user['is_private'],
-					access: user['is_private'] ? !!(user['follows_viewer'] && user['followed_by_viewer']) : true,
+					access: user['is_private'] ? !!user['followed_by_viewer'] : true,
 					verified: user['is_verified'],
 					website: user['external_url'],
 					followers: user['edge_followed_by']['count'],
