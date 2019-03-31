@@ -2,6 +2,16 @@
 
 Scrape data from Instagram without applying for the authenticated API.
 
+## Getting started
+
+### Install
+
+`yarn add @kaki87/ig-scraper`
+
+#### Use
+
+`const Insta = require('@kaki87/ig-scraper');`
+
 ## Features
 
 ### Get profile info
@@ -402,3 +412,4 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 	- Fixed video post thumbnail & views count
 	- Using promises & observable
 * `1.0.5` (2019-03-27) • Added proper error for private accounts
+* `1.0.6` (2019-03-31) • Private account access doesn't require mutual follow
