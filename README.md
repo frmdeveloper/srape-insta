@@ -25,28 +25,100 @@ Insta.getProfile('tiana_kaki')
 {
 	"id": "6965336095",
 	"name": "Tiana",
-	"pic": "https://scontent-cdt1-1.cdninstagram.com/vp/80bb9aba4916b94a1eec374211a28250/5D2F4763/t51.2885-19/s320x320/26268757_235337373674020_3943053532785016832_n.jpg?_nc_ht=scontent-cdt1-1.cdninstagram.com",
+	"pic": "https://scontent-mrs1-1.cdninstagram.com/vp/343360e2c822f78d6d302a1847db1833/5D2F4763/t51.2885-19/s320x320/26268757_235337373674020_3943053532785016832_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com",
 	"bio": "",
 	"private": false,
 	"access": true,
 	"verified": false,
 	"website": "https://tianalemesle.fr/",
-	"followers": 46,
+	"followers": 47,
 	"following": 67,
 	"posts": 35,
 	"lastPosts": [
-		"Buth7q-nTnW",
-		"BtwBWbmnXtx",
-		"BtHJSmMhiDY",
-		"BtHI5W9hnIC",
-		"Bswe8NNH2zM",
-		"BsTROEhH_vF",
-		"BrNOGceHFVP",
-		"BrNNjEpnPdb",
-		"BrNM6qyHf-3",
-		"BpkbkgpnjEw",
-		"BnhdjA1HxuL",
-		"BmIzQtoHGmf"
+		{
+			"shortcode": "Buth7q-nTnW",
+			"caption": "#Printemps, je t'attends... #SansFiltre",
+			"comments": 6,
+			"likes": 19,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/8fa17d71f33bb54a00db99bd8e541867/5D4DBF63/t51.2885-15/e35/54247334_153829485620428_284172727424042842_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BtwBWbmnXtx",
+			"caption": null,
+			"comments": 2,
+			"likes": 13,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/1aa76e9034146cbb4a11df9ccadbc4ca/5D3B3694/t51.2885-15/e35/51630243_300346887318286_1153828804517519290_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BtHJSmMhiDY",
+			"caption": null,
+			"comments": 0,
+			"likes": 15,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/273a1708bee7e9a8d591909be132b07d/5D4BB319/t51.2885-15/e35/49956649_371028023716609_5134205395749435536_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BtHI5W9hnIC",
+			"caption": null,
+			"comments": 0,
+			"likes": 12,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/04555ff1f40fda87c44628b020c738b9/5D4DDA34/t51.2885-15/e35/50122735_316738632313098_2433061622058179786_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "Bswe8NNH2zM",
+			"caption": "Mardi dernier, soirée avec @wanbrugel et Nicolas 😊",
+			"comments": 0,
+			"likes": 13,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/8a0a38c279e94d63444e8d80a624b635/5D4ADEA4/t51.2885-15/e35/47694740_185974182362782_4899609520284927084_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BsTROEhH_vF",
+			"caption": "En train de monter un #PC dans une tour Apple PowerPC G5 #DIY #hardware",
+			"comments": 0,
+			"likes": 16,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/bb4deebd7b27a38b436ccdd6e430798d/5D4F529B/t51.2885-15/e35/47690623_372969523265822_8390625550776372762_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BrNOGceHFVP",
+			"caption": null,
+			"comments": 3,
+			"likes": 13,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/ea8820adfb6bc2ff18966800a54e7864/5D3B143C/t51.2885-15/e35/47111792_409105112960531_5352118272458917955_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BrNNjEpnPdb",
+			"caption": "La Cathédrale de #Limoges avec #NightSight sans filtre Insta",
+			"comments": 0,
+			"likes": 17,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/836c5f001bd6ef240eeb8874732a0a27/5D405B8C/t51.2885-15/e35/47294377_193674951581354_5868536511326168129_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BrNM6qyHf-3",
+			"caption": "La montre connectée de #Xiaomi #MiBand3\nMerci @guillaume_slash pour #NightSight !",
+			"comments": 2,
+			"likes": 54,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/96aff5be0bba30fb39994c35624f3bfb/5D4A7A95/t51.2885-15/e35/45881951_215607719355847_3477452604092009384_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BpkbkgpnjEw",
+			"caption": "Ça doit être vachement sympa là-haut 😁",
+			"comments": 0,
+			"likes": 11,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/ab13a7a9d09ceb40dd1dec90a443e117/5D4AE3CE/t51.2885-15/e35/43778254_1910469582382519_3801506745605066266_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BnhdjA1HxuL",
+			"caption": "Limoges ce week-end 👌",
+			"comments": 0,
+			"likes": 17,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/3c2c258128d3b4f4f179b7169aef1619/5D4584ED/t51.2885-15/e35/40424674_453536151823165_8193177846042095519_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		},
+		{
+			"shortcode": "BmIzQtoHGmf",
+			"caption": null,
+			"comments": 0,
+			"likes": 7,
+			"thumbnail": "https://scontent-mrs1-1.cdninstagram.com/vp/e998d8c35ecec7a7b419a997283f2367/5D455781/t51.2885-15/e35/37759941_526054377852677_3383772250233634816_n.jpg?_nc_ht=scontent-mrs1-1.cdninstagram.com"
+		}
 	],
 	"link": "https://instagram.com/tiana_kaki"
 }
@@ -395,8 +467,14 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 
 ## Planned features
 
-- Support for authentication (private profiles, stories)
+- Support for authentication (private profiles, stories, publish)
 - More events : deleted post, added/deleted comment & like
+
+## Authors
+
+**KaKi87 (Tiana Lemesle)** - *Initial work*
+
+**[juliomontilla100](https://git.kaki87.net/juliomontilla100)** - *1 contribution*
 
 ## Changelog
 
@@ -413,3 +491,4 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 	- Using promises & observable
 * `1.0.5` (2019-03-27) • Added proper error for private accounts
 * `1.0.6` (2019-03-31) • Private account access doesn't require mutual follow
+* `1.0.7` (2019-04-03) • Profile's last posts analytics **[#1 by juliomontilla100](https://git.kaki87.net/KaKi87/ig-scraper/pulls/1)** + more
