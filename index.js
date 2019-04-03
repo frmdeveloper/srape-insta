@@ -29,8 +29,11 @@ module.exports =  {
 					followers: user['edge_followed_by']['count'],
 					following: user['edge_follow']['count'],
 					posts: user['edge_owner_to_timeline_media']['count'],
-					lastPosts: user['edge_owner_to_timeline_media']['edges']
-						.map(post => post['node']['shortcode']),
+					lastPosts: user['edge_owner_to_timeline_media']['edges'].map(post => ({ 
+						shortcode : post['node']['shortcode'],
+						comments: post['node']['edge_media_to_comment'].count,
+						likes: post['node']['edge_liked_by'].count
+					})),
 					link
 				};
 			} catch(_) {
