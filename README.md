@@ -491,4 +491,4 @@ Insta.subscribeHashtagPosts('cat', interval, lastPost)
 	- Using promises & observable
 * `1.0.5` (2019-03-27) • Added proper error for private accounts
 * `1.0.6` (2019-03-31) • Private account access doesn't require mutual follow
-* `1.0.7` (2019-04-03) • Profile's last posts analytics **[#1 by juliomontilla100](https://git.kaki87.net/KaKi87/ig-scraper/pulls/1)** + more
+* `1.0.7` (2019-04-03) • Added profile's last posts analytics **[#1 by juliomontilla100](https://git.kaki87.net/KaKi87/ig-scraper/pulls/1)** + more
