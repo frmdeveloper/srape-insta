@@ -152,18 +152,6 @@ module.exports = class Insta {
 						hashtagsRegex = /(?<=[\s>])#(\d*[A-Za-z_]+\d*)\b(?!;)/g,
 						usernamesRegex = /@([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?)/g;
 					resolve({
-						timestamp: post['taken_at_timestamp'],
-						likes: post['edge_media_preview_like']['count'],
-						location: post['location'] ? {
-							id: post['location']['id'],
-							name: post['location']['name'],
-							city: JSON.parse(post['location']['address_json'])['city_name']
-						} : null,
-						caption,
-						hashtags: caption ? caption.match(hashtagsRegex) : null,
-						mentions: caption ? caption.match(usernamesRegex) : null,
-						tagged: post['edge_media_to_tagged_user']['edges']
-							.map(u => u['node']['user']['username']),
 						author: {
 							id: post['owner']['id'],
 							username,
@@ -172,6 +160,40 @@ module.exports = class Insta {
 							verified: post['owner']['is_verified'],
 							link: `${ insta }/${ username }`
 						},
+						location: post['location'] ? {
+							id: post['location']['id'],
+							name: post['location']['name'],
+							city: JSON.parse(post['location']['address_json'])['city_name']
+						} : null,
+						...(post['__typename'] === 'GraphImage' ? {
+							contents: [{
+								type: 'photo',
+								url: post['display_url']
+							}]
+						} : {}),
+						...(post['__typename'] === 'GraphVideo' ? {
+							contents: [{
+								type: 'video',
+								url: post['video_url'],
+								thumbnail: post['display_url'],
+								views: post['video_view_count']
+							}]
+						} : {}),
+						...(post['__typename'] === 'GraphSidecar' ? {
+							contents: post['edge_sidecar_to_children']['edges']
+								.map(content => ({
+									type: content['node']['is_video'] ? 'video' : 'photo',
+									url: content['node']['is_video'] ? content['node']['video_url'] : content['node']['display_url'],
+									thumbnail: content['node']['is_video'] ? content['node']['display_url'] : null,
+									views: content['node']['is_video'] ? content['node']['video_view_count'] : null
+								}))
+						} : {}),
+						tagged: post['edge_media_to_tagged_user']['edges']
+							.map(u => u['node']['user']['username']),
+						likes: post['edge_media_preview_like']['count'],
+						caption,
+						hashtags: caption ? caption.match(hashtagsRegex) : null,
+						mentions: caption ? caption.match(usernamesRegex) : null,
 						comments: post['comments_disabled'] ? null : post[`edge_media_${this.sessionID ? 'preview': 'to'}_comment`]['edges']
 							.map(c => ({
 								user: c['node']['owner']['username'],
@@ -181,6 +203,7 @@ module.exports = class Insta {
 								mentions: c['node']['text'].match(usernamesRegex),
 								likes: c['node']['edge_liked_by']['count']
 							})),
+						timestamp: post['taken_at_timestamp'],
 						link: insta + path
 					});
 				})
