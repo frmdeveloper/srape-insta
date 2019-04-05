@@ -188,7 +188,7 @@ module.exports = class Insta {
 		});
 	}
 	_search(query){
-		return new Promise((resolve, reject) => this._get('web/search/topsearch',false, this.sessionID, { context: 'blended', query })
+		return new Promise((resolve, reject) => this._get('web/search/topsearch',false, undefined, { context: 'blended', query })
 			.then(res => resolve(JSON.parse(res.body)))
 			.catch(reject));
 	}
