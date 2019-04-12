@@ -59,7 +59,7 @@ module.exports = class Insta {
 					resolve(this.profile);
 				}
 				else
-					reject(403);
+					reject(401);
 			})
 			.catch(reject));
 	}
