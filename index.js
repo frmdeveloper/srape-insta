@@ -243,7 +243,7 @@ module.exports = class Insta {
 			.then(res => resolve(res['places'].map(item => item['place']['location']).map(location => ({
 				id: location['pk'],
 				name: location['name'],
-				adress: {
+				address: {
 					street: location['address'],
 					city: location['city'],
 					latitude: location['lat'],
