@@ -100,17 +100,17 @@ module.exports = class Insta {
 			const path = `explore/tags/${hashtag}`;
 			this._get(path)
 				.then(hashtag => resolve({
-						pic: hashtag['profile_pic_url'],
-						posts: hashtag['edge_hashtag_to_media']['count'],
-						featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => postDetails(post)),
-						lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => postDetails(post)),
-						link: insta + path,
-						...(this.sessionID ? {
-							user: {
-								following: hashtag['is_following']
-							}
-						} : {})
-					}))
+					pic: hashtag['profile_pic_url'],
+					posts: hashtag['edge_hashtag_to_media']['count'],
+					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => postDetails(post)),
+					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => postDetails(post)),
+					link: insta + path,
+					...(this.sessionID ? {
+						user: {
+							following: hashtag['is_following']
+						}
+					} : {})
+				}))
 				.catch(reject);
 		});
 	}
