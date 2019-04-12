@@ -153,7 +153,6 @@ module.exports = class Insta {
 						usernamesRegex = /@([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?)/g;
 					resolve({
 						author: {
-							id: post['owner']['id'],
 							username,
 							name: post['owner']['full_name'],
 							pic: post['owner']['profile_pic_url'],
@@ -161,7 +160,6 @@ module.exports = class Insta {
 							link: `${ insta }/${ username }`
 						},
 						location: post['location'] ? {
-							id: post['location']['id'],
 							name: post['location']['name'],
 							city: JSON.parse(post['location']['address_json'])['city_name']
 						} : null,
