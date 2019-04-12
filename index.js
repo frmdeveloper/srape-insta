@@ -184,10 +184,8 @@ module.exports = class Insta {
 								.map(content => ({
 									type: content['node']['is_video'] ? 'video' : 'photo',
 									url: content['node']['is_video'] ? content['node']['video_url'] : content['node']['display_url'],
-									...(content['node']['is_video'] ? {
-										thumbnail: content['node']['is_video'] ? content['node']['display_url'] : null,
-										views: content['node']['is_video'] ? content['node']['video_view_count'] : null
-									} : {})
+									thumbnail: content['node']['is_video'] ? content['node']['display_url'] : null,
+									views: content['node']['is_video'] ? content['node']['video_view_count'] : null
 								}))
 						} : {}),
 						tagged: post['edge_media_to_tagged_user']['edges']
