@@ -74,7 +74,7 @@ module.exports = class Insta {
 						'GraphLikeAggregatedStory' : 'like',
 						'GraphMentionStory': 'mention',
 						'GraphCommentMediaStory': 'comment',
-						'GraphFollowAggregatedStory': 'dollow'
+						'GraphFollowAggregatedStory': 'follow'
 					})[notification['__typename']],
 					...(notification['media'] ? {
 						post: {
