@@ -296,6 +296,41 @@ InstaClient.subscribeHashtagPosts(hashtag, interval, lastPost).subscribe({
 });
 ```
 
+#### Authenticated requests
+
+##### Get account notifications
+
+```js
+InstaClient.getAccountNotifications()
+	.then(notifications => console.log(notifications))
+	.catch(err => console.error(err));
+```
+
+Result in array : notification
+
+- `id` *string* - Notification identifier
+- `timestamp` *epoch*
+- `type` *string* - Notification type : `like`, `mention`, `comment`
+- `post`
+	- `shortcode`
+	- `thumbnail`
+- `by`
+	- `username`
+	- `name`
+	- `pic`
+- `content` *string* - Comment content (where applicable)
+
+##### Subscribe to account notifications
+
+- `lastNotification` *string* (optional) - Notification ID
+
+```js
+InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe({
+	next: notification => console.log(notification),
+	error: err => console.error(err)
+});
+```
+
 ## Changelog
 
 * `1.0.0` (2019-03-26) • Initial release
