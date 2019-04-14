@@ -273,7 +273,10 @@ module.exports = class Insta {
 							lastPost = _lastPost;
 						}
 					})
-					.catch(observer.error);
+					.catch(err => {
+						observer.error(err);
+						checkNewPosts();
+					});
 			};
 			checkNewPosts();
 		});
@@ -292,7 +295,10 @@ module.exports = class Insta {
 						setTimeout(checkNewPosts, interval);
 						lastPost = _lastPost;
 					})
-					.catch(observer.error);
+					.catch(err => {
+						observer.error(err);
+						checkNewPosts();
+					});
 			};
 			checkNewPosts();
 		});
