@@ -310,7 +310,7 @@ Result in array : notification
 
 - `id` *string* - Notification identifier
 - `timestamp` *epoch*
-- `type` *string* - Notification type : `like`, `mention`, `comment`
+- `type` *string* - Notification type : `like`, `mention`, `comment`, `follow`
 - `post`
 	- `shortcode`
 	- `thumbnail`
