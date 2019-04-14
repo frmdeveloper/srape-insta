@@ -63,6 +63,39 @@ module.exports = class Insta {
 			})
 			.catch(reject));
 	}
+	getAccountNotifications(){
+		return new Promise((resolve, reject) => {
+			if(!this.sessionID) return reject(401);
+			this._get('accounts/activity').then(res => {
+				resolve(res['activity_feed']['edge_web_activity_feed']['edges'].map(item => item['node']).map(notification => ({
+					id: notification['id'],
+					timestamp: notification['timestamp'],
+					type: ({
+						'GraphLikeAggregatedStory' : 'like',
+						'GraphMentionStory': 'mention',
+						'GraphCommentMediaStory': 'comment',
+						'GraphFollowAggregatedStory': 'dollow'
+					})[notification['__typename']],
+					...(notification['media'] ? {
+						post: {
+							shortcode: notification['media']['shortcode'],
+							thumbnail: notification['media']['thumbnail_src']
+						}
+					} : {}),
+					...(notification['user'] ? {
+						by: {
+							username: notification['user']['username'],
+							name: notification['user']['full_name'],
+							pic: notification['user']['profile_pic_url']
+						}
+					} : {}),
+					...(notification['__typename'] === 'GraphMentionStory' ? {
+						content: notification['text']
+					} : {})
+				})));
+			})
+		});
+	}
 	getProfile(username = this.profile.username){
 		return new Promise((resolve, reject) => this._get(username)
 			.then(profile => {
@@ -253,6 +286,26 @@ module.exports = class Insta {
 				}
 			}))))
 			.catch(reject));
+	}
+	subscribeAccountNotifications(interval = 30, lastNotification){
+		return new Observable(observer => {
+			const checkNewNotifications = () => {
+				this.getAccountNotifications()
+					.then(notifications => {
+						const _lastNotification = notifications[0].id;
+						if(!lastNotification || _lastNotification !== lastNotification){
+							for(let i = 0; i < notifications.map(notification => notification.id).indexOf(lastNotification); i++){
+								observer.next(notifications[i]);
+							}
+						}
+					})
+					.catch(err => {
+						observer.error(err);
+						checkNewNotifications();
+					});
+			};
+			checkNewNotifications();
+		});
 	}
 	subscribeUserPosts(username, interval = 30, lastPost){
 		return new Observable(observer => {

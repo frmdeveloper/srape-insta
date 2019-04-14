@@ -312,11 +312,12 @@ InstaClient.subscribeHashtagPosts(hashtag, interval, lastPost).subscribe({
 * `1.0.5` (2019-03-27) • Added proper error for private accounts
 * `1.0.6` (2019-03-31) • Private account access doesn't require mutual follow
 * `1.0.7` (2019-04-03) • Added profile's last posts analytics **[#1 by juliomontilla100](https://git.kaki87.net/KaKi87/ig-scraper/pulls/1)** + more
-* `1.0.8` (2019-04-12) • Fixes, improvements & features
+* `1.0.8` (2019-04-14) • Fixes, improvements & features
 	- Using classes
 	- Added support for authentication using session cookie (only allows to access friend profile)
 	- Added support for locations
 	- Added search feature for profiles, hashtags & locations
 	- Added user-relevant properties
+	- Added support for notifications history & subscription
 	- Fixed subscriptions since *#1*
 	- Removed useless `id` properties
