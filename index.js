@@ -298,6 +298,8 @@ module.exports = class Insta {
 								observer.next(notifications[i]);
 							}
 						}
+						setTimeout(checkNewNotifications, interval);
+						lastNotification = _lastNotification;
 					})
 					.catch(err => {
 						observer.error(err);
