@@ -334,20 +334,20 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 ## Changelog
 
 * `1.0.0` (2019-03-26) • Initial release
-* `1.0.1` (2019-03-27) • Added improvements & features
+* `1.0.1` (2019-03-27)
 	- Fixed throw error scope
 	- Fixed single photo post wrongly structured
 	- Added support for comments
 	- Added support for hashtags, mentions and tags in posts and comments
 	- Added posts subscriptions feature from users (untested) and hashtags
 * `1.0.2` (2019-03-27) • Added support for videos
-* `1.0.4` (2019-03-27) • Added improvements & features
+* `1.0.4` (2019-03-27)
 	- Fixed video post thumbnail & views count
 	- Using promises & observable
 * `1.0.5` (2019-03-27) • Added proper error for private accounts
 * `1.0.6` (2019-03-31) • Private account access doesn't require mutual follow
 * `1.0.7` (2019-04-03) • Added profile's last posts analytics **[#1 by juliomontilla100](https://git.kaki87.net/KaKi87/ig-scraper/pulls/1)** + more
-* `1.0.8` (2019-04-14) • Fixes, improvements & features
+* `1.0.8` (2019-04-14)
 	- Using classes
 	- Added support for authentication using session cookie (only allows to access friend profile)
 	- Added support for locations
