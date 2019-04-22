@@ -114,7 +114,7 @@ Result
 - `user` *object* - user relevant properties **(while authenticated)** :
 	- `mutualFollowers` *array of usernames* - people following you and this profile
 	- `blocking` *boolean* - you blocked this profile
-	- `blocked` *boolean* - this profile blocked you
+	- `blocked` *boolean* - this profile blocked you (only available property in `user` while `true`)
 	- `requesting` *boolean* - you sent a follow request to this profile (if private)
 	- `requested` *boolean* - this profile sent you a follow request (if yours is private)
 	- `following` *boolean* - you're following this profile
