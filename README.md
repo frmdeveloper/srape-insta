@@ -211,7 +211,7 @@ Result
 - `caption` *string* - post description
 - `hashtags` *array of hashtags* - hashtags mentioned in post description
 - `mentions` *array of usernames* - people mentioned in post description
-- `comments` *array of objects*
+- `comments` *array of objects* (Max 40)
 	- `user` *string* - comment author's username
 	- `content` *string* - comment content
 	- `timestamp` *epoch*
