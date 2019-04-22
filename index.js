@@ -112,7 +112,7 @@ module.exports = class Insta {
 					following: profile['edge_follow']['count'],
 					posts: profile['edge_owner_to_timeline_media']['count'],
 					lastPosts: access ? profile['edge_owner_to_timeline_media']['edges'].map(post => postDetails(post)) : null,
-					link: insta + username,
+					link: insta + profile['username'],
 					...(profile['is_business_account'] ? {
 						business: profile['business_category_name']
 					} : {}),
