@@ -18,7 +18,7 @@ Utils
 const querystring = object => Object.keys(object).map(key => `${key}=${object[key]}`).join('&');
 
 /*
-Class private variables & methods
+Class private methods
  */
 
 const _this = {
@@ -68,7 +68,15 @@ const _this = {
 	})
 };
 
+/*
+Class public properties & methods
+ */
+
 module.exports = class Insta {
+	constructor(){
+		this.sessionID = '';
+		this.username = '';
+	}
 	authBySessionID(sessionID){
 		return new Promise((resolve, reject) => _this.get('accounts/edit', false, sessionID)
 			.then(res => {
