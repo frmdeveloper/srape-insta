@@ -22,9 +22,7 @@ Class private variables & methods
  */
 
 const _this = {
-	sessionID: null,
-	profile: null,
-	get: (path, tryParse = true, sessionID = _this.sessionID, params) => new Promise((resolve, reject) => {
+	get: (path, tryParse = true, sessionID = this.sessionID, params) => new Promise((resolve, reject) => {
 		const url = insta + path + '/?' + querystring({ ...(sessionID ? { __a: 1 } : {}), ...params });
 		request(url, {
 			headers: {
@@ -75,9 +73,10 @@ module.exports = class Insta {
 		return new Promise((resolve, reject) => _this.get('accounts/edit', false, sessionID)
 			.then(res => {
 				if(!res.redirected){
-					_this.sessionID = sessionID;
-					_this.profile = JSON.parse(res.body)['form_data'];
-					resolve(_this.profile);
+					this.sessionID = sessionID;
+					const account = JSON.parse(res.body)['form_data'];
+					this.username = account.username;
+					resolve(account);
 				}
 				else
 					reject(401);
@@ -86,7 +85,7 @@ module.exports = class Insta {
 	}
 	getAccountNotifications(){
 		return new Promise((resolve, reject) => {
-			if(!_this.sessionID) return reject(401);
+			if(!this.sessionID) return reject(401);
 			_this.get('accounts/activity').then(res => {
 				resolve(res['activity_feed']['edge_web_activity_feed']['edges'].map(item => item['node']).map(notification => ({
 					id: notification['id'],
@@ -117,7 +116,7 @@ module.exports = class Insta {
 			})
 		});
 	}
-	getProfile(username = _this.profile.username, anonymous = false){
+	getProfile(username = this.username, anonymous = false){
 		return new Promise((resolve, reject) => _this.get(username, true, anonymous ? null : undefined)
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
@@ -137,7 +136,7 @@ module.exports = class Insta {
 					...(profile['is_business_account'] ? {
 						business: profile['business_category_name']
 					} : {}),
-					...(_this.sessionID ? {
+					...(this.sessionID ? {
 						user: {
 							mutualFollowers: profile['edge_mutual_followed_by']['edges'].map(item => item['node']['username']),
 							blocking: profile['blocked_by_viewer'],
@@ -172,7 +171,7 @@ module.exports = class Insta {
 					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => _this.postDetails(post)),
 					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => _this.postDetails(post)),
 					link: insta + path,
-					...(_this.sessionID ? {
+					...(this.sessionID ? {
 						user: {
 							following: hashtag['is_following']
 						}
@@ -263,7 +262,7 @@ module.exports = class Insta {
 						caption,
 						hashtags: caption ? caption.match(hashtagsRegex) : null,
 						mentions: caption ? caption.match(usernamesRegex) : null,
-						comments: post['comments_disabled'] ? null : post[`edge_media_${_this.sessionID ? 'preview': 'to'}_comment`]['edges']
+						comments: post['comments_disabled'] ? null : post[`edge_media_${this.sessionID ? 'preview': 'to'}_comment`]['edges']
 							.map(c => ({
 								user: c['node']['owner']['username'],
 								content: c['node']['text'],
@@ -289,7 +288,7 @@ module.exports = class Insta {
 				private: profile['is_private'],
 				verified: profile['is_verified'],
 				followers: profile['follower_count'],
-				...(_this.sessionID ? {
+				...(this.sessionID ? {
 					user: {
 						following: profile['following']
 					}
