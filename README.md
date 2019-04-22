@@ -85,6 +85,7 @@ These methods allows you to get specific elements from Instagram while you know 
 - Request error : failed to get data from Instagram (HTTP code)
 - Parsing error : failed to parse data returned by Instagram (`406`)
 - No content : nothing to parse (`204`)
+- Authentication required : session ID required to access data (`401`)
 
 ##### Get profile by username
 
