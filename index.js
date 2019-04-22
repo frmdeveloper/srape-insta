@@ -40,8 +40,12 @@ module.exports = class Insta {
 					try { data = JSON.parse(body); } catch(_){}
 					if(!data)
 						reject(406);
-					else
-						resolve(Object.values(data['graphql'])[0]);
+					else {
+						if(!data['graphql'])
+							reject(204);
+						else
+							resolve(Object.values(data['graphql'])[0]);
+					}
 				}
 				else {
 					res.redirected = res.request.uri.href !== url;
@@ -96,8 +100,8 @@ module.exports = class Insta {
 			})
 		});
 	}
-	getProfile(username = this.profile.username){
-		return new Promise((resolve, reject) => this._get(username)
+	getProfile(username = this.profile.username, anonymous = false){
+		return new Promise((resolve, reject) => this._get(username, true, anonymous ? null : undefined)
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
 				resolve({
@@ -129,7 +133,17 @@ module.exports = class Insta {
 					} : {})
 				});
 			})
-			.catch(reject));
+			.catch(err => {
+				if(err === 204){
+					this.getProfile(username, true)
+						.then(profile => resolve(Object.assign(profile, {
+							user: { blocked: true }
+						})))
+						.catch(reject);
+				}
+				else
+					reject(err);
+			}));
 	}
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {

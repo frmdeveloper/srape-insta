@@ -359,3 +359,4 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 	- Removed useless `id` properties
 * `1.0.9` (2019-04-??)
 	- Added `business` property to profile (where applicable)
+	- Automatically access public profile anonymously when user blocked
