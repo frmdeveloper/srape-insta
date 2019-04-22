@@ -110,6 +110,7 @@ Result
 - `lastPosts` *array of posts* - last posts
 <br>This property is empty (`[]`) when the profile doesn't have any post but `null` if `access` is `false` (denied).
 - `link` *url* - link to the profile's page
+- `business` *string* - business category (where applicable)
 - `user` *object* - user relevant properties **(while authenticated)** :
 	- `mutualFollowers` *array of usernames* - people following you and this profile
 	- `blocking` *boolean* - you blocked this profile
@@ -356,3 +357,5 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 	- Added support for notifications history & subscription
 	- Fixed subscriptions since *#1*
 	- Removed useless `id` properties
+* `1.0.9` (2019-04-??)
+	- Added `business` property to profile (where applicable)
