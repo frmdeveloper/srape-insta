@@ -127,7 +127,7 @@ module.exports = class Insta {
 							followed: profile['follows_viewer']
 						}
 					} : {})
-				})
+				});
 			})
 			.catch(reject));
 	}
