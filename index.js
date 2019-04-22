@@ -81,6 +81,8 @@ module.exports = class Insta {
 		return new Promise((resolve, reject) => _this.get('accounts/edit', false, sessionID)
 			.then(res => {
 				if(!res.redirected){
+					if(this.sessionID)
+						process.emitWarning('Session ID changed');
 					this.sessionID = sessionID;
 					const account = JSON.parse(res.body)['form_data'];
 					this.username = account.username;
