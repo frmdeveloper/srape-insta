@@ -117,7 +117,7 @@ Result
 	- `requesting` *boolean* - you sent a follow request to this profile (if private)
 	- `requested` *boolean* - this profile sent you a follow request (if yours is private)
 	- `following` *boolean* - you're following this profile
-	- `followed`  *boolean* - this profile follows you
+	- `followed` *boolean* - this profile follows you
 
 *TBA : story*
 
@@ -292,7 +292,7 @@ InstaClient.subscribeUserPosts(username, interval, lastPost).subscribe({
 ```js
 InstaClient.subscribeHashtagPosts(hashtag, interval, lastPost).subscribe({
 	next: shortcode => console.log(shortcode),
-    error: err => console.error(err)
+	error: err => console.error(err)
 });
 ```
 
