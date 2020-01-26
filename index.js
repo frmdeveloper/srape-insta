@@ -21,7 +21,7 @@ const querystring = object => Object.keys(object).map(key => `${key}=${object[ke
 Class private methods
  */
 
-const _this = {
+const self = {
 	get: (path, tryParse = true, sessionID = this.sessionID, params) => new Promise((resolve, reject) => {
 		const url = insta + path + '/?' + querystring({ ...(sessionID ? { __a: 1 } : {}), ...params });
 		request(url, {
@@ -55,7 +55,7 @@ const _this = {
 			}
 		});
 	}),
-	search: query => new Promise((resolve, reject) => _this.get('web/search/topsearch',false, undefined, { context: 'blended', query })
+	search: query => new Promise((resolve, reject) => self.get('web/search/topsearch',false, undefined, { context: 'blended', query })
 		.then(res => resolve(JSON.parse(res.body)))
 		.catch(reject)),
 	postDetails: post => ({
@@ -78,7 +78,7 @@ module.exports = class Insta {
 		this.username = '';
 	}
 	authBySessionID(sessionID){
-		return new Promise((resolve, reject) => _this.get('accounts/edit', false, sessionID)
+		return new Promise((resolve, reject) => self.get('accounts/edit', false, sessionID)
 			.then(res => {
 				if(!res.redirected){
 					if(this.sessionID)
@@ -96,7 +96,7 @@ module.exports = class Insta {
 	getAccountNotifications(){
 		return new Promise((resolve, reject) => {
 			if(!this.sessionID) return reject(401);
-			_this.get('accounts/activity').then(res => {
+			self.get('accounts/activity').then(res => {
 				resolve(res['activity_feed']['edge_web_activity_feed']['edges'].map(item => item['node']).map(notification => ({
 					id: notification['id'],
 					timestamp: notification['timestamp'],
@@ -127,7 +127,7 @@ module.exports = class Insta {
 		});
 	}
 	getProfile(username = this.username, anonymous = false){
-		return new Promise((resolve, reject) => _this.get(username, true, anonymous ? null : undefined)
+		return new Promise((resolve, reject) => self.get(username, true, anonymous ? null : undefined)
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
 				resolve({
@@ -141,7 +141,7 @@ module.exports = class Insta {
 					followers: profile['edge_followed_by']['count'],
 					following: profile['edge_follow']['count'],
 					posts: profile['edge_owner_to_timeline_media']['count'],
-					lastPosts: access ? profile['edge_owner_to_timeline_media']['edges'].map(post => _this.postDetails(post)) : null,
+					lastPosts: access ? profile['edge_owner_to_timeline_media']['edges'].map(post => self.postDetails(post)) : null,
 					link: insta + profile['username'],
 					...(profile['is_business_account'] ? {
 						business: profile['business_category_name']
@@ -174,12 +174,12 @@ module.exports = class Insta {
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
 			const path = `explore/tags/${hashtag}`;
-			_this.get(path)
+			self.get(path)
 				.then(hashtag => resolve({
 					pic: hashtag['profile_pic_url'],
 					posts: hashtag['edge_hashtag_to_media']['count'],
-					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => _this.postDetails(post)),
-					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => _this.postDetails(post)),
+					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => self.postDetails(post)),
+					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => self.postDetails(post)),
 					link: insta + path,
 					...(this.sessionID ? {
 						user: {
@@ -193,7 +193,7 @@ module.exports = class Insta {
 	getLocation(id){
 		return new Promise((resolve, reject) => {
 			const path = `explore/locations/${id}`;
-			_this.get(path)
+			self.get(path)
 				.then(location => {
 					const address = JSON.parse(location['address_json']);
 					resolve({
@@ -208,8 +208,8 @@ module.exports = class Insta {
 						},
 						website: location['website'],
 						phone: location['phone'],
-						featuredPosts: location['edge_location_to_top_posts']['edges'].map(post => _this.postDetails(post)),
-						lastPosts: location['edge_location_to_media']['edges'].map(post => _this.postDetails(post)),
+						featuredPosts: location['edge_location_to_top_posts']['edges'].map(post => self.postDetails(post)),
+						lastPosts: location['edge_location_to_media']['edges'].map(post => self.postDetails(post)),
 						link: insta + path
 					});
 				})
@@ -219,7 +219,7 @@ module.exports = class Insta {
 	getPost(shortcode){
 		return new Promise((resolve, reject) => {
 			const path = `p/${shortcode}`;
-			_this.get(path)
+			self.get(path)
 				.then(post => {
 					const
 						caption = post['edge_media_to_caption']['edges'].length > 0
@@ -288,9 +288,8 @@ module.exports = class Insta {
 				.catch(reject);
 		});
 	}
-	}
 	searchProfile(query){
-		return new Promise((resolve, reject) => _this.search(query)
+		return new Promise((resolve, reject) => self.search(query)
 			.then(res => resolve(res['users'].map(item => item['user']).map(profile => ({
 				username: profile['username'],
 				name: profile['full_name'],
@@ -307,13 +306,13 @@ module.exports = class Insta {
 			.catch(reject));
 	}
 	searchHashtag(query){
-		return new Promise((resolve, reject) => _this.search(query)
+		return new Promise((resolve, reject) => self.search(query)
 			.then(res => resolve(res['hashtags'].map(item => item['hashtag'])
 				.map(hashtag => ({ name: hashtag['name'], posts: hashtag['media_count'] }))))
 			.catch(reject));
 	}
 	searchLocation(query){
-		return new Promise((resolve, reject) => _this.search(query)
+		return new Promise((resolve, reject) => self.search(query)
 			.then(res => resolve(res['places'].map(item => item['place']['location']).map(location => ({
 				id: location['pk'],
 				name: location['name'],

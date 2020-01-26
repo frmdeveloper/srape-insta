@@ -112,7 +112,7 @@ Result
 - `lastPosts` *array of posts* - last posts
 <br>This property is empty (`[]`) when the profile doesn't have any post but `null` if `access` is `false` (denied).
 - `link` *url* - link to the profile's page
-- `business` *string* - business category (where applicable and profile unblocked)
+- `business` *string* - business category (when applicable and profile unblocked)
 - `user` *object* - user relevant properties **(while authenticated)** :
 	- `mutualFollowers` *array of usernames* - people following you and this profile
 	- `blocking` *boolean* - you blocked this profile
@@ -321,7 +321,7 @@ Result in array : notification
 	- `username`
 	- `name`
 	- `pic`
-- `content` *string* - Comment content (where applicable)
+- `content` *string* - Comment content (when applicable)
 
 ##### Subscribe to account notifications
 
@@ -360,5 +360,5 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 	- Fixed subscriptions since *#1*
 	- Removed useless `id` properties
 * `1.0.9` (2019-04-??)
-	- Added `business` property to profile (where applicable)
+	- Added `business` property to profile (when applicable)
 	- Automatically access public profile anonymously when user blocked
