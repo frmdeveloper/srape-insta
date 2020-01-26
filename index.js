@@ -272,7 +272,7 @@ module.exports = class Insta {
 						caption,
 						hashtags: caption ? caption.match(hashtagsRegex) : null,
 						mentions: caption ? caption.match(usernamesRegex) : null,
-						comments: post['comments_disabled'] ? null : post[`edge_media_${this.sessionID ? 'preview': 'to'}_comment`]['edges']
+						comments: post['comments_disabled'] ? null : post[`edge_media_preview_comment`]['edges']
 							.map(c => ({
 								user: c['node']['owner']['username'],
 								content: c['node']['text'],
