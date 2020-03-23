@@ -365,8 +365,8 @@ module.exports = class Insta {
 			(async () => {
 				try {
 					const profile = await this.getProfile(username);
-					const lastPostIndex = Math.max(profile.lastPosts.findIndex(post => post.shortcode === lastPostShortcode), 0);
-					for(let i = lastPostIndex; i > 0 ; i--){
+					const lastPostIndex = profile.lastPosts.findIndex(post => post.shortcode === lastPostShortcode);
+					for(let i = Math.max(lastPostIndex - 1, 0); i >= 0 ; i--){
 						callback(fullPosts ? (await this.getPost(profile.lastPosts[i].shortcode)) : profile.lastPosts[i]);
 					}
 					lastPostShortcode = profile.lastPosts[0].shortcode;
