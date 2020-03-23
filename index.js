@@ -7,7 +7,6 @@ Modules
 const
 	request = require('requestretry'),
 	JSDOM = require('jsdom').JSDOM,
-	Observable = require('zen-observable'),
 	parse = document => new JSDOM(document, { runScripts: 'dangerously' }).window.document,
 	insta = 'https://www.instagram.com/';
 
@@ -325,75 +324,96 @@ module.exports = class Insta {
 			}))))
 			.catch(reject));
 	}
-	subscribeAccountNotifications(interval = 30, lastNotification){
-		return new Observable(observer => {
-			const checkNewNotifications = () => {
-				this.getAccountNotifications()
-					.then(notifications => {
-						const _lastNotification = notifications[0].id;
-						if(!lastNotification || _lastNotification !== lastNotification){
-							for(let i = 0; i < notifications.map(notification => notification.id).indexOf(lastNotification); i++){
-								observer.next(notifications[i]);
-							}
-						}
-						setTimeout(checkNewNotifications, interval);
-						lastNotification = _lastNotification;
-					})
-					.catch(err => {
-						observer.error(err);
-						checkNewNotifications();
-					});
-			};
-			checkNewNotifications();
-		});
+	subscribeAccountNotifications(callback, {
+		interval = 30,
+		lastNotificationId
+	}){
+		let active = true;
+		const checkNewNotifications = () => {
+			if(!active) return;
+			(async () => {
+				try {
+					const notifications = await this.getAccountNotifications();
+					const lastNotification = Math.max(notifications.findIndex(notification => notification.id === lastNotificationId), 0);
+					for(let i = lastNotification; i > 0 ; i--){
+						callback(notifications[i]);
+					}
+					lastNotificationId = notifications[0].id;
+					setTimeout(checkNewNotifications, interval * 1000);
+				}
+				catch(err){
+					callback(undefined, err);
+					checkNewNotifications();
+				}
+			})();
+		};
+		checkNewNotifications();
+		return {
+			unsubscribe: () => {
+				active = false;
+			}
+		};
 	}
-	subscribeUserPosts(username, interval = 30, lastPost){
-		return new Observable(observer => {
-			const checkNewPosts = () => {
-				this.getProfile(username)
-					.then(profile => {
-						if(!profile.access){
-							observer.error(403);
-						}
-						else {
-							const _lastPost = profile.lastPosts[0].shortcode;
-							if(!lastPost || _lastPost !== lastPost){
-								for(let i = 0; i < profile.lastPosts.map(p => p.shortcode).indexOf(lastPost); i++){
-									observer.next(profile.lastPosts[i]);
-								}
-							}
-							setTimeout(checkNewPosts, interval);
-							lastPost = _lastPost;
-						}
-					})
-					.catch(err => {
-						observer.error(err);
-						checkNewPosts();
-					});
-			};
-			checkNewPosts();
-		});
+	subscribeUserPosts(username, callback, {
+		interval = 30,
+		lastPostShortcode,
+		fullPosts = false
+	} = {}){
+		let active = true;
+		const checkNewPosts = () => {
+			if(!active) return;
+			(async () => {
+				try {
+					const profile = await this.getProfile(username);
+					const lastPostIndex = Math.max(profile.lastPosts.findIndex(post => post.shortcode === lastPostShortcode), 0);
+					for(let i = lastPostIndex; i > 0 ; i--){
+						callback(fullPosts ? (await this.getPost(profile.lastPosts[i].shortcode)) : profile.lastPosts[i]);
+					}
+					lastPostShortcode = profile.lastPosts[0].shortcode;
+					setTimeout(checkNewPosts, interval * 1000);
+				}
+				catch(err){
+					callback(undefined, err);
+					checkNewPosts();
+				}
+			})();
+		};
+		checkNewPosts();
+		return {
+			unsubscribe: () => {
+				active = false;
+			}
+		};
 	}
-	subscribeHashtagPosts(hashtag, interval = 30, lastPost){
-		return new Observable(observer => {
-			const checkNewPosts = () => {
-				this.getHashtag(hashtag)
-					.then(hashtag => {
-						const _lastPost = hashtag.lastPosts[0].shortcode;
-						if(!lastPost || _lastPost !== lastPost){
-							for(let i = 0; i < hashtag.lastPosts.map(p => p.shortcode).indexOf(lastPost); i++){
-								observer.next(hashtag.lastPosts[i]);
-							}
-						}
-						setTimeout(checkNewPosts, interval);
-						lastPost = _lastPost;
-					})
-					.catch(err => {
-						observer.error(err);
-						checkNewPosts();
-					});
-			};
-			checkNewPosts();
-		});
+	subscribeHashtagPosts(hashtagName, callback, {
+		interval = 30,
+		lastPostShortcode = undefined,
+		fullPosts = false
+	} = {}){
+		let active = true;
+		const checkNewPosts = () => {
+			if(!active) return;
+			(async () => {
+				try {
+					const hashtag = await this.getHashtag(hashtagName);
+					const lastPostIndex = Math.max(hashtag.lastPosts.findIndex(post => post.shortcode === lastPostShortcode), 0);
+					for(let i = lastPostIndex; i > 0 ; i--){
+						callback(fullPosts ? (await this.getPost(hashtag.lastPosts[i].shortcode)) : hashtag.lastPosts[i]);
+					}
+					lastPostShortcode = hashtag.lastPosts[0].shortcode;
+					setTimeout(checkNewPosts, interval * 1000);
+				}
+				catch(err){
+					callback(undefined, err);
+					checkNewPosts();
+				}
+			})();
+		};
+		checkNewPosts();
+		return {
+			unsubscribe: () => {
+				active = false;
+			}
+		};
 	}
 };

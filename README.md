@@ -14,16 +14,16 @@ Scrape data from Instagram without applying for the authenticated API.
 
 From [npm](https://www.npmjs.com/package/@kaki87/ig-scraper)
 
-`yarn add @kaki87/ig-scraper`
+`yarn add scraper-instagram`
 
 or
 
-`npm i @kaki87/ig-scraper`
+`npm i scraper-instagram --save`
 
 ### Use
 
 ```js
-const Insta = require('@kaki87/ig-scraper');
+const Insta = require('scraper-instagram');
 const InstaClient = new Insta();
 ```
 
@@ -278,24 +278,38 @@ Result in array : a subset of location.
 
 #### Subscribe
 
-- `interval` *integer* (optional) - time in seconds between requests. **Default : 30**
-- `lastPost` *string* (optional) - shortcode from which to begin if not the next one to be published.
+- `options` *object* (optional)
+    - `interval` *integer* (optional) - time in seconds between requests. **Default : 30**
+    - `lastPostShortcode` *string* (optional) - shortcode from which to begin if not the next one to be published.
+    - `fullPosts` *boolean* (optional) - fetch full post data, additional request required
 
 ##### Subscribe to user posts
 
 ```js
-InstaClient.subscribeUserPosts(username, interval, lastPost).subscribe({
-	next: shortcode => console.log(shortcode),
-	error: err => console.error(err)
+InstaClient.subscribeUserPosts(username, (post, err) => {
+    if(post)
+        console.log(post.shortcode);
+    else
+        console.error(err);
+}, {
+    interval,
+    lastPostShortcode,
+    fullPosts
 });
 ```
 
 ##### Subscribe to hashtag posts
 
 ```js
-InstaClient.subscribeHashtagPosts(hashtag, interval, lastPost).subscribe({
-	next: shortcode => console.log(shortcode),
-	error: err => console.error(err)
+InstaClient.subscribeHashtagPosts(hashtag, (post, err) => {
+    if(post)
+        console.log(post.shortcode);
+    else
+        console.error(err);
+}, {
+    interval,
+    lastPostShortcode,
+    fullPosts
 });
 ```
 
@@ -363,3 +377,10 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 	- Added `business` property to profile (when applicable)
 	- Automatically access public profile anonymously when user blocked
 * `1.0.10` (2020-01-26) • Fixed post comments on anonymous session
+* `1.0.11` (2020-??-??)
+    - Improved subscriptions
+        - Using async/await
+        - Using simple callbacks instead of observables
+        - Using object parameter for options
+        - Added full post fetching option
+        - Added subscription unsubscribe method

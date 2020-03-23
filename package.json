@@ -26,8 +26,7 @@
   },
   "dependencies": {
     "jsdom": "^14.0.0",
-    "requestretry": "^4.0.0",
-    "zen-observable": "^0.8.13"
+    "requestretry": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"
