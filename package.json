@@ -25,7 +25,7 @@
     "url": "https://git.kaki87.net/KaKi87/ig-scraper.git"
   },
   "dependencies": {
-    "jsdom": "^14.0.0",
+    "request": "^2.88.2",
     "requestretry": "^4.0.0"
   },
   "publishConfig": {

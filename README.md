@@ -385,3 +385,6 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
         - Added full post fetching option
         - Added subscription unsubscribe method
     - Improved `401` detection
+    - Improved parsing
+        - Using RegExp
+        - Removed JSDOM dependency

@@ -6,8 +6,6 @@ Modules
 
 const
 	request = require('requestretry'),
-	JSDOM = require('jsdom').JSDOM,
-	parse = document => new JSDOM(document, { runScripts: 'dangerously' }).window.document,
 	insta = 'https://www.instagram.com/';
 
 /*
@@ -36,19 +34,15 @@ const self = {
 				reject(res.statusCode);
 			}
 			else if(tryParse){
-				let data;
-				if(!sessionID){
-					body += `<script>document.querySelector('html').innerHTML = JSON.stringify(Object.values(window['_sharedData']['entry_data'])[0][0])</script>`;
-					body = parse(body).body.textContent;
+				try {
+					resolve(
+						Object.values(sessionID
+							? JSON.parse(body)['graphql']
+							: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
+					);
 				}
-				try { data = JSON.parse(body); } catch(_){}
-				if(!data)
+				catch(_){
 					reject(406);
-				else {
-					if(!data['graphql'])
-						reject(204);
-					else
-						resolve(Object.values(data['graphql'])[0]);
 				}
 			}
 			else {
