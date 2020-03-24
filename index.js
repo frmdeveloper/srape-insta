@@ -29,7 +29,10 @@ const self = {
 			},
 			followAllRedirects: true
 		}, (err, res, body) => {
-			if(res.statusCode !== 200){
+			if(res.request.uri.href.startsWith(insta + 'accounts/login')){
+				reject(401);
+			}
+			else if(res.statusCode !== 200){
 				reject(res.statusCode);
 			}
 			else if(tryParse){
@@ -49,7 +52,6 @@ const self = {
 				}
 			}
 			else {
-				res.redirected = res.request.uri.href !== url;
 				resolve(res);
 			}
 		});
@@ -79,16 +81,12 @@ module.exports = class Insta {
 	authBySessionID(sessionID){
 		return new Promise((resolve, reject) => self.get('accounts/edit', false, sessionID)
 			.then(res => {
-				if(!res.redirected){
-					if(this.sessionID)
-						process.emitWarning('Session ID changed');
-					this.sessionID = sessionID;
-					const account = JSON.parse(res.body)['form_data'];
-					this.username = account.username;
-					resolve(account);
-				}
-				else
-					reject(401);
+				if(this.sessionID)
+					process.emitWarning('Session ID changed');
+				this.sessionID = sessionID;
+				const account = JSON.parse(res.body)['form_data'];
+				this.username = account.username;
+				resolve(account);
 			})
 			.catch(reject));
 	}

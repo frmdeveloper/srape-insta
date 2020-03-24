@@ -384,3 +384,4 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
         - Using object parameter for options
         - Added full post fetching option
         - Added subscription unsubscribe method
+    - Improved `401` detection
