@@ -334,9 +334,11 @@ module.exports = class Insta {
 			(async () => {
 				try {
 					const notifications = await this.getAccountNotifications();
-					const lastNotification = Math.max(notifications.findIndex(notification => notification.id === lastNotificationId), 0);
-					for(let i = lastNotification; i > 0 ; i--){
-						callback(notifications[i]);
+					const lastNotificationIndex = notifications.findIndex(notification => notification.id === lastNotificationId);
+					if(lastNotificationIndex !== -1){
+						for(let i = lastNotificationIndex - 1; i > -1 ; i--){
+							callback(notifications[i]);
+						}
 					}
 					lastNotificationId = notifications[0].id;
 					setTimeout(checkNewNotifications, interval * 1000);
@@ -366,8 +368,10 @@ module.exports = class Insta {
 				try {
 					const profile = await this.getProfile(username);
 					const lastPostIndex = profile.lastPosts.findIndex(post => post.shortcode === lastPostShortcode);
-					for(let i = Math.max(lastPostIndex - 1, 0); i >= 0 ; i--){
-						callback(fullPosts ? (await this.getPost(profile.lastPosts[i].shortcode)) : profile.lastPosts[i]);
+					if(lastPostIndex !== -1){
+						for(let i = lastPostIndex - 1; i > -1 ; i--){
+							callback(fullPosts ? (await this.getPost(profile.lastPosts[i].shortcode)) : profile.lastPosts[i]);
+						}
 					}
 					lastPostShortcode = profile.lastPosts[0].shortcode;
 					setTimeout(checkNewPosts, interval * 1000);
@@ -396,8 +400,8 @@ module.exports = class Insta {
 			(async () => {
 				try {
 					const hashtag = await this.getHashtag(hashtagName);
-					const lastPostIndex = Math.max(hashtag.lastPosts.findIndex(post => post.shortcode === lastPostShortcode), 0);
-					for(let i = lastPostIndex; i > 0 ; i--){
+					const lastPostIndex = hashtag.lastPosts.findIndex(post => post.shortcode === lastPostShortcode);
+					for(let i = lastPostIndex - 1; i > -1 ; i--){
 						callback(fullPosts ? (await this.getPost(hashtag.lastPosts[i].shortcode)) : hashtag.lastPosts[i]);
 					}
 					lastPostShortcode = hashtag.lastPosts[0].shortcode;
