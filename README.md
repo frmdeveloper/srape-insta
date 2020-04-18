@@ -214,6 +214,7 @@ Result
 - `caption` *string* - post description
 - `hashtags` *array of hashtags* - hashtags mentioned in post description
 - `mentions` *array of usernames* - people mentioned in post description
+- `edited` *boolean* - caption edited
 - `comments` *array of objects* (Max 40)
 	- `user` *string* - comment author's username
 	- `content` *string* - comment content
@@ -388,3 +389,4 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
     - Improved parsing
         - Using RegExp
         - Removed JSDOM dependency
+    - Added support for edited post captions
