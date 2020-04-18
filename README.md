@@ -378,7 +378,7 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
 	- Added `business` property to profile (when applicable)
 	- Automatically access public profile anonymously when user blocked
 * `1.0.10` (2020-01-26) • Fixed post comments on anonymous session
-* `1.0.11` (2020-??-??)
+* `1.0.11` (2020-04-18)
     - Improved subscriptions
         - Using async/await
         - Using simple callbacks instead of observables
