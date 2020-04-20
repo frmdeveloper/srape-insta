@@ -12,7 +12,7 @@ Scrape data from Instagram without applying for the authenticated API.
 
 ### Install
 
-From [npm](https://www.npmjs.com/package/@kaki87/ig-scraper)
+From [npm](https://www.npmjs.com/package/scraper-instagram)
 
 `yarn add scraper-instagram`
 
