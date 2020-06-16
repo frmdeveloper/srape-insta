@@ -390,3 +390,4 @@ InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe(
         - Using RegExp
         - Removed JSDOM dependency
     - Added support for edited post captions
+* `1.0.12` (2020-06-16) • Small fix & refactor
