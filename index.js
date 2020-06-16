@@ -114,7 +114,7 @@ module.exports = class Insta {
 						content: notification['text']
 					} : {})
 				})));
-			})
+			}).catch(reject);
 		});
 	}
 	getProfile(username = this.username, anonymous = false){
