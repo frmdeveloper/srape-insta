@@ -19,7 +19,7 @@ Class private methods
  */
 
 const self = {
-	get: (path, tryParse = true, sessionID = this.sessionID, params) => new Promise((resolve, reject) => {
+	get: (path, sessionID, tryParse = true, params) => new Promise((resolve, reject) => {
 		const url = insta + path + '/?' + querystring({ ...(sessionID ? { __a: 1 } : {}), ...params });
 		request(url, {
 			headers: {
@@ -50,7 +50,7 @@ const self = {
 			}
 		});
 	}),
-	search: query => new Promise((resolve, reject) => self.get('web/search/topsearch',false, undefined, { context: 'blended', query })
+	search: (query, sessionID) => new Promise((resolve, reject) => self.get('web/search/topsearch', sessionID, false, { context: 'blended', query })
 		.then(res => resolve(JSON.parse(res.body)))
 		.catch(reject)),
 	postDetails: post => ({
@@ -73,7 +73,7 @@ module.exports = class Insta {
 		this.username = '';
 	}
 	authBySessionID(sessionID){
-		return new Promise((resolve, reject) => self.get('accounts/edit', false, sessionID)
+		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID, false)
 			.then(res => {
 				if(this.sessionID)
 					process.emitWarning('Session ID changed');
@@ -87,7 +87,7 @@ module.exports = class Insta {
 	getAccountNotifications(){
 		return new Promise((resolve, reject) => {
 			if(!this.sessionID) return reject(401);
-			self.get('accounts/activity').then(res => {
+			self.get('accounts/activity', this.sessionID).then(res => {
 				resolve(res['activity_feed']['edge_web_activity_feed']['edges'].map(item => item['node']).map(notification => ({
 					id: notification['id'],
 					timestamp: notification['timestamp'],
@@ -118,7 +118,7 @@ module.exports = class Insta {
 		});
 	}
 	getProfile(username = this.username, anonymous = false){
-		return new Promise((resolve, reject) => self.get(username, true, anonymous ? null : undefined)
+		return new Promise((resolve, reject) => self.get(username, anonymous ? null : this.sessionID)
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
 				resolve({
@@ -165,7 +165,7 @@ module.exports = class Insta {
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
 			const path = `explore/tags/${hashtag}`;
-			self.get(path)
+			self.get(path, this.sessionID)
 				.then(hashtag => resolve({
 					pic: hashtag['profile_pic_url'],
 					posts: hashtag['edge_hashtag_to_media']['count'],
@@ -281,7 +281,7 @@ module.exports = class Insta {
 		});
 	}
 	searchProfile(query){
-		return new Promise((resolve, reject) => self.search(query)
+		return new Promise((resolve, reject) => self.search(query, this.sessionID)
 			.then(res => resolve(res['users'].map(item => item['user']).map(profile => ({
 				username: profile['username'],
 				name: profile['full_name'],
