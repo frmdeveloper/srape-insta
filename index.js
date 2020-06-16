@@ -37,7 +37,7 @@ const self = {
 				try {
 					resolve(
 						Object.values(sessionID
-							? JSON.parse(body)['graphql']
+							? (JSON.parse(body)['graphql'] || JSON.parse(body))
 							: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
 					);
 				}
@@ -114,6 +114,37 @@ module.exports = class Insta {
 						content: notification['text']
 					} : {})
 				})));
+			}).catch(reject);
+		});
+	}
+	getAccountStories(){
+		return new Promise((resolve, reject) => {
+			if(!this.sessionID) return reject(401);
+			self.get('', this.sessionID, false, { __a: undefined }).then(({ body }) => {
+				const query_hash = body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1];
+				self.get('graphql/query', this.sessionID, undefined, {
+					query_hash
+				}).then(body => Promise.all(body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges']
+                .map(item => new Promise((resolve, reject) => self.get('graphql/query', this.sessionID, undefined, {
+                    query_hash,
+                    variables: JSON.stringify({ reel_ids: [ item['node']['id'] ] })
+                }).then(body => resolve({
+                    unread: item['node']['latest_reel_media'] !== item['node']['seen'],
+                    author: {
+                        username: item['node']['user']['username'],
+                        pic: item['node']['user']['profile_pic_url']
+                    },
+                    user: {
+                        requesting: item['node']['user']['requested_by_viewer'],
+                        following: item['node']['user']['followed_by_viewer']
+                    },
+                    items: body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'][0]['node']['items'].map(item => ({
+                        url: item['display_url'],
+                        type: item['is_video'] ? 'video' : 'photo',
+                        timestamp: item['taken_at_timestamp'],
+                        expirationTimestamp: item['expiring_at_timestamp']
+                    }))
+                })).catch(reject)))).then(resolve).catch(reject)).catch(reject);
 			}).catch(reject);
 		});
 	}
