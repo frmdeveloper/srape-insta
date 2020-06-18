@@ -72,6 +72,7 @@ module.exports = class Insta {
 	constructor(){
 		this.sessionID = undefined;
 		this.username = undefined;
+		this.storyQueryHash = undefined;
 	}
 	authBySessionID(sessionID){
 		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID)
@@ -121,30 +122,22 @@ module.exports = class Insta {
 		return new Promise((resolve, reject) => {
 			if(!this.sessionID) return reject(401);
 			self.get('', this.sessionID, false, { __a: undefined }).then(({ body }) => {
-				const query_hash = body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1];
 				self.get('graphql/query', this.sessionID, undefined, {
-					query_hash
-				}).then(body => Promise.all(body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges']
-                .map(item => new Promise((resolve, reject) => self.get('graphql/query', this.sessionID, undefined, {
-                    query_hash,
-                    variables: JSON.stringify({ reel_ids: [ item['node']['id'] ] })
-                }).then(body => resolve({
-                    unread: item['node']['latest_reel_media'] !== item['node']['seen'],
-                    author: {
-                        username: item['node']['user']['username'],
-                        pic: item['node']['user']['profile_pic_url']
-                    },
-                    user: {
-                        requesting: item['node']['user']['requested_by_viewer'],
-                        following: item['node']['user']['followed_by_viewer']
-                    },
-                    items: body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'][0]['node']['items'].map(item => ({
-                        url: item['is_video'] ? item['video_resources'].find(item => item['profile'] === 'MAIN')['src'] : item['display_url'],
-                        type: item['is_video'] ? 'video' : 'photo',
-                        timestamp: item['taken_at_timestamp'],
-                        expirationTimestamp: item['expiring_at_timestamp']
-                    }))
-                })).catch(reject)))).then(resolve).catch(reject)).catch(reject);
+					query_hash: body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1]
+				}).then(body => {
+					resolve(body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'].map(item => ({
+						unread: item['node']['latest_reel_media'] !== item['node']['seen'],
+						author: {
+							id: item['node']['user']['id'],
+							username: item['node']['user']['username'],
+							pic: item['node']['user']['profile_pic_url']
+						},
+						user: {
+							requesting: item['node']['user']['requested_by_viewer'],
+							following: item['node']['user']['followed_by_viewer']
+						}
+					})));
+				}).catch(reject);
 			}).catch(reject);
 		});
 	}
@@ -153,6 +146,7 @@ module.exports = class Insta {
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
 				resolve({
+					id: profile['id'],
 					name: profile['full_name'],
 					pic: profile['profile_pic_url_hd'],
 					bio: profile['biography'],
@@ -192,6 +186,55 @@ module.exports = class Insta {
 				else
 					reject(err);
 			}));
+	}
+	_getStoryQueryHash(){
+		return new Promise((resolve, reject) => {
+			if(this.storyQueryHash) return resolve(this.storyQueryHash);
+			self.get('', this.sessionID, false, { __a: undefined }).then(({ body }) => {
+				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(({ body }) => {
+					this.storyQueryHash = body.match(/50,[a-zA-Z]="([a-zA-Z0-9]{32})",/)[1];
+					resolve(this.storyQueryHash);
+				}).catch(reject);
+			}).catch(reject);
+		});
+	}
+	getProfileStoryById(id){
+		return new Promise((resolve, reject) => {
+			if(!this.sessionID) return reject(401);
+			this._getStoryQueryHash().then(queryHash => self.get('graphql/query', this.sessionID, undefined, {
+				query_hash: queryHash,
+				variables: JSON.stringify({
+					reel_ids: [ id ],
+					precomposed_overlay: false
+				})
+			}).then(data => resolve(data['reels_media'].map(item => ({
+				unread: item['latest_reel_media'] !== item['seen'],
+				author: {
+					username: item['user']['username'],
+					pic: item['user']['profile_pic_url']
+				},
+				user: {
+					requesting: item['user']['requested_by_viewer'],
+					following: item['user']['followed_by_viewer']
+				},
+				items: item['items'].map(item => ({
+					url: item['is_video'] ? item['video_resources'].find(item => item['profile'] === 'MAIN')['src'] : item['display_url'],
+					type: item['is_video'] ? 'video' : 'photo',
+					timestamp: item['taken_at_timestamp'],
+					expirationTimestamp: item['expiring_at_timestamp']
+				}))
+			})))).catch(reject)).catch(reject);
+		});
+	}
+	getProfileStory(username = this.username){
+		return new Promise((resolve, reject) => {
+			this.getProfile(username)
+				.then(({ id }) =>
+					this.getProfileStoryById(id)
+						.then(resolve)
+						.catch(reject))
+				.catch(reject);
+		});
 	}
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
