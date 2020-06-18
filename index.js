@@ -139,7 +139,7 @@ module.exports = class Insta {
                         following: item['node']['user']['followed_by_viewer']
                     },
                     items: body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'][0]['node']['items'].map(item => ({
-                        url: item['display_url'],
+                        url: item['is_video'] ? item['video_resources'].find(item => item['profile'] === 'MAIN')['src'] : item['display_url'],
                         type: item['is_video'] ? 'video' : 'photo',
                         timestamp: item['taken_at_timestamp'],
                         expirationTimestamp: item['expiring_at_timestamp']
