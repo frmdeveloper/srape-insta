@@ -20,7 +20,8 @@ Class private methods
 
 const self = {
 	get: (path, sessionID, tryParse = true, params) => new Promise((resolve, reject) => {
-		const url = insta + path + '/?' + querystring({ ...(sessionID ? { __a: 1 } : {}), ...params });
+		params = JSON.stringify({ __a: sessionID ? '1' : undefined, ...params });
+		const url = insta + path + ((params !== '{}') ? ('/?' + querystring(JSON.parse(params))) : '');
 		request(url, {
 			headers: {
 				cookie: sessionID ? `sessionid=${sessionID}` : ''
@@ -69,8 +70,8 @@ Class public properties & methods
 
 module.exports = class Insta {
 	constructor(){
-		this.sessionID = '';
-		this.username = '';
+		this.sessionID = undefined;
+		this.username = undefined;
 	}
 	authBySessionID(sessionID){
 		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID)
