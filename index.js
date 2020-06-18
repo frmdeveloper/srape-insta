@@ -73,14 +73,13 @@ module.exports = class Insta {
 		this.username = '';
 	}
 	authBySessionID(sessionID){
-		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID, false)
-			.then(res => {
+		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID)
+			.then(body => {
 				if(this.sessionID)
 					process.emitWarning('Session ID changed');
 				this.sessionID = sessionID;
-				const account = JSON.parse(res.body)['form_data'];
-				this.username = account.username;
-				resolve(account);
+				this.username = body['username'];
+				resolve(body);
 			})
 			.catch(reject));
 	}
