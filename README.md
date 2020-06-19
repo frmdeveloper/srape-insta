@@ -43,7 +43,7 @@ Authentication allows you to access private profile as long as you follow them.
 ##### Code
 
 ```js
-InstaClient.authBySessionID(yourSessionID)
+InstaClient.authBySessionId(yourSessionId)
 	.then(account => console.log(account))
 	.catch(err => console.error(err));
 ```

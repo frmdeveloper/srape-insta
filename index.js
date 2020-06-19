@@ -19,12 +19,12 @@ Class private methods
  */
 
 const self = {
-	get: (path, sessionID, tryParse = true, params) => new Promise((resolve, reject) => {
-		params = JSON.stringify({ __a: sessionID ? '1' : undefined, ...params });
+	get: (path, sessionId, tryParse = true, params) => new Promise((resolve, reject) => {
+		params = JSON.stringify({ __a: sessionId ? '1' : undefined, ...params });
 		const url = insta + path + ((params !== '{}') ? ('/?' + querystring(JSON.parse(params))) : '');
 		request(url, {
 			headers: {
-				cookie: sessionID ? `sessionid=${sessionID}` : ''
+				cookie: sessionId ? `sessionid=${sessionId}` : ''
 			},
 			followAllRedirects: true
 		}, (err, res, body) => {
@@ -37,7 +37,7 @@ const self = {
 			else if(tryParse){
 				try {
 					resolve(
-						Object.values(sessionID
+						Object.values(sessionId
 							? (JSON.parse(body)['graphql'] || JSON.parse(body))
 							: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
 					);
@@ -51,7 +51,7 @@ const self = {
 			}
 		});
 	}),
-	search: (query, sessionID) => new Promise((resolve, reject) => self.get('web/search/topsearch', sessionID, false, { context: 'blended', query })
+	search: (query, sessionId) => new Promise((resolve, reject) => self.get('web/search/topsearch', sessionId, false, { context: 'blended', query })
 		.then(res => resolve(JSON.parse(res.body)))
 		.catch(reject)),
 	postDetails: post => ({
@@ -70,16 +70,16 @@ Class public properties & methods
 
 module.exports = class Insta {
 	constructor(){
-		this.sessionID = undefined;
+		this.sessionId = undefined;
 		this.username = undefined;
 		this.storyQueryHash = undefined;
 	}
-	authBySessionID(sessionID){
-		return new Promise((resolve, reject) => self.get('accounts/edit', sessionID)
+	authBySessionId(sessionId){
+		return new Promise((resolve, reject) => self.get('accounts/edit', sessionId)
 			.then(body => {
-				if(this.sessionID)
+				if(this.sessionId)
 					process.emitWarning('Session ID changed');
-				this.sessionID = sessionID;
+				this.sessionId = sessionId;
 				this.username = body['username'];
 				resolve(body);
 			})
@@ -87,8 +87,8 @@ module.exports = class Insta {
 	}
 	getAccountNotifications(){
 		return new Promise((resolve, reject) => {
-			if(!this.sessionID) return reject(401);
-			self.get('accounts/activity', this.sessionID).then(res => {
+			if(!this.sessionId) return reject(401);
+			self.get('accounts/activity', this.sessionId).then(res => {
 				resolve(res['activity_feed']['edge_web_activity_feed']['edges'].map(item => item['node']).map(notification => ({
 					id: notification['id'],
 					timestamp: notification['timestamp'],
@@ -120,9 +120,9 @@ module.exports = class Insta {
 	}
 	getAccountStories(){
 		return new Promise((resolve, reject) => {
-			if(!this.sessionID) return reject(401);
-			self.get('', this.sessionID, false, { __a: undefined }).then(({ body }) => {
-				self.get('graphql/query', this.sessionID, undefined, {
+			if(!this.sessionId) return reject(401);
+			self.get('', this.sessionId, false, { __a: undefined }).then(({ body }) => {
+				self.get('graphql/query', this.sessionId, undefined, {
 					query_hash: body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1]
 				}).then(body => {
 					resolve(body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'].map(item => ({
@@ -142,7 +142,7 @@ module.exports = class Insta {
 		});
 	}
 	getProfile(username = this.username, anonymous = false){
-		return new Promise((resolve, reject) => self.get(username, anonymous ? null : this.sessionID)
+		return new Promise((resolve, reject) => self.get(username, anonymous ? null : this.sessionId)
 			.then(profile => {
 				const access = profile['is_private'] ? !!profile['followed_by_viewer'] : true;
 				resolve({
@@ -162,7 +162,7 @@ module.exports = class Insta {
 					...(profile['is_business_account'] ? {
 						business: profile['business_category_name']
 					} : {}),
-					...(this.sessionID ? {
+					...(this.sessionId ? {
 						user: {
 							mutualFollowers: profile['edge_mutual_followed_by']['edges'].map(item => item['node']['username']),
 							blocking: profile['blocked_by_viewer'],
@@ -190,7 +190,7 @@ module.exports = class Insta {
 	_getStoryQueryHash(){
 		return new Promise((resolve, reject) => {
 			if(this.storyQueryHash) return resolve(this.storyQueryHash);
-			self.get('', this.sessionID, false, { __a: undefined }).then(({ body }) => {
+			self.get('', this.sessionId, false, { __a: undefined }).then(({ body }) => {
 				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(({ body }) => {
 					this.storyQueryHash = body.match(/50,[a-zA-Z]="([a-zA-Z0-9]{32})",/)[1];
 					resolve(this.storyQueryHash);
@@ -200,8 +200,8 @@ module.exports = class Insta {
 	}
 	getProfileStoryById(id){
 		return new Promise((resolve, reject) => {
-			if(!this.sessionID) return reject(401);
-			this._getStoryQueryHash().then(queryHash => self.get('graphql/query', this.sessionID, undefined, {
+			if(!this.sessionId) return reject(401);
+			this._getStoryQueryHash().then(queryHash => self.get('graphql/query', this.sessionId, undefined, {
 				query_hash: queryHash,
 				variables: JSON.stringify({
 					reel_ids: [ id ],
@@ -239,14 +239,14 @@ module.exports = class Insta {
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
 			const path = `explore/tags/${hashtag}`;
-			self.get(path, this.sessionID)
+			self.get(path, this.sessionId)
 				.then(hashtag => resolve({
 					pic: hashtag['profile_pic_url'],
 					posts: hashtag['edge_hashtag_to_media']['count'],
 					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => self.postDetails(post)),
 					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => self.postDetails(post)),
 					link: insta + path,
-					...(this.sessionID ? {
+					...(this.sessionId ? {
 						user: {
 							following: hashtag['is_following']
 						}
@@ -355,7 +355,7 @@ module.exports = class Insta {
 		});
 	}
 	searchProfile(query){
-		return new Promise((resolve, reject) => self.search(query, this.sessionID)
+		return new Promise((resolve, reject) => self.search(query, this.sessionId)
 			.then(res => resolve(res['users'].map(item => item['user']).map(profile => ({
 				username: profile['username'],
 				name: profile['full_name'],
@@ -363,7 +363,7 @@ module.exports = class Insta {
 				private: profile['is_private'],
 				verified: profile['is_verified'],
 				followers: profile['follower_count'],
-				...(this.sessionID ? {
+				...(this.sessionId ? {
 					user: {
 						following: profile['following']
 					}
