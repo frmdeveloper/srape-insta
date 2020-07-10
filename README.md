@@ -340,12 +340,19 @@ Result in array : notification
 
 ##### Subscribe to account notifications
 
-- `lastNotification` *string* (optional) - Notification ID
+- `options` *object* (optional)
+    - `interval` *integer* (optional) - time in seconds between requests. **Default : 30**
+    - `lastNotificationId` *string* (optional) - Notification ID
 
 ```js
-InstaClient.subscribeAccountNotifications(interval, lastNotification).subscribe({
-	next: notification => console.log(notification),
-	error: err => console.error(err)
+InstaClient.subscribeAccountNotifications((post, err) => {
+    if(post)
+        console.log(post.shortcode);
+    else
+        console.error(err);
+}, {
+    interval,
+    lastNotificationId
 });
 ```
 
