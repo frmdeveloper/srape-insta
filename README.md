@@ -314,7 +314,7 @@ InstaClient.subscribeHashtagPosts(hashtag, (post, err) => {
 });
 ```
 
-#### Authenticated requests
+#### Account requests (user-relevant methods)
 
 ##### Get account notifications
 
