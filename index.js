@@ -207,23 +207,23 @@ module.exports = class Insta {
 					reel_ids: [ id ],
 					precomposed_overlay: false
 				})
-			}).then(data => resolve(data['reels_media'].map(item => ({
-				unread: item['latest_reel_media'] !== item['seen'],
+			}).then(data => resolve({
+				unread: data['reels_media'][0]['latest_reel_media'] !== data['reels_media'][0]['seen'],
 				author: {
-					username: item['user']['username'],
-					pic: item['user']['profile_pic_url']
+					username: data['reels_media'][0]['user']['username'],
+					pic: data['reels_media'][0]['user']['profile_pic_url']
 				},
 				user: {
-					requesting: item['user']['requested_by_viewer'],
-					following: item['user']['followed_by_viewer']
+					requesting: data['reels_media'][0]['user']['requested_by_viewer'],
+					following: data['reels_media'][0]['user']['followed_by_viewer']
 				},
-				items: item['items'].map(item => ({
+				items: data['reels_media'][0]['items'].map(item => ({
 					url: item['is_video'] ? item['video_resources'][0]['src'] : item['display_url'],
 					type: item['is_video'] ? 'video' : 'photo',
 					timestamp: item['taken_at_timestamp'],
 					expirationTimestamp: item['expiring_at_timestamp']
 				}))
-			})))).catch(reject)).catch(reject);
+			})).catch(reject)).catch(reject);
 		});
 	}
 	getProfileStory(username = this.username){
