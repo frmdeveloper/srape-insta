@@ -97,6 +97,7 @@ InstaClient.getProfile(username)
 
 Result
 
+- `id` *string* - Instagram identifier, only used for stories
 - `name` *string* - public full [name](https://help.instagram.com/583107688369069)
 - `pic` *url* - public profile [picture](https://help.instagram.com/557544397610546)
 - `bio` *string* - public biography
@@ -122,7 +123,40 @@ Result
 	- `following` *boolean* - you're following this profile
 	- `followed` *boolean* - this profile follows you
 
-*TBA : story*
+##### Get profile story (requires authentication)
+
+##### Using profile ID
+
+```js
+InstaClient.getProfileStoryById(id)
+    .then(profile => console.log(profile))
+    	.catch(err => console.error(err));
+```
+
+##### Using profile username (will automatically request profile ID)
+
+```js
+InstaClient.getProfileStory(username)
+    .then(profile => console.log(profile))
+    	.catch(err => console.error(err));
+```
+
+##### Result
+
+- `unread` *boolean* - profile story is unread
+- `author` *object* - a subset of profile
+    - `username`
+    - `pic`
+- `user` *object* - user relevant properties
+    - `requesting`
+    - `following`
+- `items` *array of stories* - profile stories
+    - `url` *string* - link to original story file (`jpg`, `mp4`, ...)
+    - `type` *string* - story type : `photo` or `video`
+    - `timestamp` *epoch*
+    - `expirationTimestamp` *epoch*
+
+Note : calling this method will not mark the story as read.
 
 ##### Get hashtag
 
@@ -142,8 +176,6 @@ Result
 - `link` *url* - link to the hashtag's page
 - `user` *object* - user relevant properties **(while authenticated)** :
 	- `following` *boolean* - you [subscribed](https://help.instagram.com/2003408499915301) to this hashtag (receiving posts in your personal feed)
-
-*TBA : stories*
 
 ##### Get location by ID
 
@@ -355,6 +387,25 @@ InstaClient.subscribeAccountNotifications((post, err) => {
     lastNotificationId
 });
 ```
+
+##### Get account stories
+
+```js
+InstaClient.getAccountStories()
+    .then(stories => console.log(stories))
+    .catch(err => console.error(err));
+```
+
+Result in array : inbox-like
+
+- `unread`
+- `author` *object* - a subset of a profile's properties.
+    - `id`
+    - `username`
+    - `pic`
+- `user` *object* - user relevant properties
+    - `requesting`
+    - `following`
 
 ## Changelog
 
