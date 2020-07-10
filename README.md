@@ -277,14 +277,14 @@ Result in array : a subset of location.
 	- `latitude`
 	- `longitude`
 
-#### Subscribe
+#### Subscribe to posts
 
 - `options` *object* (optional)
     - `interval` *integer* (optional) - time in seconds between requests. **Default : 30**
     - `lastPostShortcode` *string* (optional) - shortcode from which to begin if not the next one to be published.
     - `fullPosts` *boolean* (optional) - fetch full post data, additional request required
 
-##### Subscribe to user posts
+##### From user
 
 ```js
 InstaClient.subscribeUserPosts(username, (post, err) => {
@@ -299,7 +299,7 @@ InstaClient.subscribeUserPosts(username, (post, err) => {
 });
 ```
 
-##### Subscribe to hashtag posts
+##### From hashtag
 
 ```js
 InstaClient.subscribeHashtagPosts(hashtag, (post, err) => {
