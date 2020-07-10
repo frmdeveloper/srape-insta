@@ -218,7 +218,7 @@ module.exports = class Insta {
 					following: item['user']['followed_by_viewer']
 				},
 				items: item['items'].map(item => ({
-					url: item['is_video'] ? item['video_resources'].find(item => item['profile'] === 'MAIN')['src'] : item['display_url'],
+					url: item['is_video'] ? item['video_resources'][0]['src'] : item['display_url'],
 					type: item['is_video'] ? 'video' : 'photo',
 					timestamp: item['taken_at_timestamp'],
 					expirationTimestamp: item['expiring_at_timestamp']
