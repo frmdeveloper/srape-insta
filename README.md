@@ -20,7 +20,7 @@ or
 
 `npm i scraper-instagram --save`
 
-### Use
+### Usage
 
 ```js
 const Insta = require('scraper-instagram');
