@@ -450,3 +450,4 @@ Result in array : inbox-like
     - Added support for edited post captions
 * `1.0.12` (2020-06-16) • Small fix & refactor
 * `1.0.13` (2020-07-10) • Added support for stories
+* `1.0.14` (2020-10-17) • Fixed access to own private profile

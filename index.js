@@ -144,7 +144,7 @@ module.exports = class Insta {
 	getProfile(username = this.username, anonymous = false){
 		return new Promise((resolve, reject) => self.get(username, anonymous ? null : this.sessionId)
 			.then(profile => {
-				const access = !profile['is_private'] || !!profile['followed_by_viewer'];
+				const access = !profile['is_private'] || !!profile['followed_by_viewer'] || profile['username'] === this.username;
 				resolve({
 					id: profile['id'],
 					name: profile['full_name'],
