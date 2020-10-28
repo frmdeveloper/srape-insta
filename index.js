@@ -284,7 +284,7 @@ module.exports = class Insta {
 	getPost(shortcode){
 		return new Promise((resolve, reject) => {
 			const path = `p/${shortcode}`;
-			self.get(path)
+			self.get(path, this.sessionId)
 				.then(post => {
 					const
 						caption = post['edge_media_to_caption']['edges'].length > 0
