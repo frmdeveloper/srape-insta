@@ -31,7 +31,7 @@ const self = {
 			res.on('data', chunk => body += chunk);
 			res.on('end', () => {
 				if(res.statusCode !== 200){
-					reject(res.statusCode);
+					reject(res.statusCode === 302 && res.headers.location === insta + 'accounts/login/' ? 429 : res.statusCode);
 				}
 				else if(tryParse){
 					try {
