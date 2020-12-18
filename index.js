@@ -5,7 +5,7 @@ Modules
  */
 
 const
-	request = require('requestretry'),
+	https = require('https'),
 	insta = 'https://www.instagram.com/';
 
 /*
@@ -21,38 +21,39 @@ Class private methods
 const self = {
 	get: (path, sessionId, tryParse = true, params) => new Promise((resolve, reject) => {
 		params = JSON.stringify({ __a: sessionId ? '1' : undefined, ...params });
-		const url = insta + path + ((params !== '{}') ? ('/?' + querystring(JSON.parse(params))) : '');
-		request(url, {
+		const url = insta + path + ((params !== '{}') ? ('/?' + querystring(JSON.parse(params))) : (tryParse ? '/' : ''));
+		https.get(url, {
 			headers: {
 				cookie: sessionId ? `sessionid=${sessionId}` : ''
-			},
-			followAllRedirects: true
-		}, (err, res, body) => {
-			if(res.request.uri.href.startsWith(insta + 'accounts/login')){
-				reject(401);
 			}
-			else if(res.statusCode !== 200){
-				reject(res.statusCode);
-			}
-			else if(tryParse){
-				try {
-					resolve(
-						Object.values(sessionId
-							? (JSON.parse(body)['graphql'] || JSON.parse(body))
-							: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
-					);
+		}, res => {
+			let body = '';
+			res.on('data', chunk => body += chunk);
+			res.on('end', () => {
+				if(res.statusCode !== 200){
+					reject(res.statusCode);
 				}
-				catch(_){
-					reject(406);
+				else if(tryParse){
+					try {
+						resolve(
+							Object.values(sessionId
+								? (JSON.parse(body)['graphql'] || JSON.parse(body))
+								: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
+						);
+					}
+					catch(_){
+						reject(406);
+					}
 				}
-			}
-			else {
-				resolve(res);
-			}
+				else {
+					resolve(body);
+				}
+			});
+			res.on('error', reject);
 		});
 	}),
 	search: (query, sessionId) => new Promise((resolve, reject) => self.get('web/search/topsearch', sessionId, false, { context: 'blended', query })
-		.then(res => resolve(JSON.parse(res.body)))
+		.then(body => resolve(JSON.parse(body)))
 		.catch(reject)),
 	postDetails: post => ({
 		shortcode: post['node']['shortcode'],
@@ -121,7 +122,7 @@ module.exports = class Insta {
 	getAccountStories(){
 		return new Promise((resolve, reject) => {
 			if(!this.sessionId) return reject(401);
-			self.get('', this.sessionId, false, { __a: undefined }).then(({ body }) => {
+			self.get('', this.sessionId, false, { __a: undefined }).then(body => {
 				self.get('graphql/query', this.sessionId, undefined, {
 					query_hash: body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1]
 				}).then(body => {
@@ -190,8 +191,8 @@ module.exports = class Insta {
 	_getStoryQueryHash(){
 		return new Promise((resolve, reject) => {
 			if(this.storyQueryHash) return resolve(this.storyQueryHash);
-			self.get('', this.sessionId, false, { __a: undefined }).then(({ body }) => {
-				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(({ body }) => {
+			self.get('', this.sessionId, false, { __a: undefined }).then(body => {
+				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(body => {
 					this.storyQueryHash = body.match(/50,[a-zA-Z]="([a-zA-Z0-9]{32})",/)[1];
 					resolve(this.storyQueryHash);
 				}).catch(reject);
