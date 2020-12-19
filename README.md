@@ -20,6 +20,30 @@ or
 
 `npm i scraper-instagram --save`
 
+### Test
+
+- `git clone https://git.kaki87.net/KaKi87/ig-scraper.git`
+- `yarn install` or `npm install`
+- `yarn test` or `npm run test`
+
+Optional environment variables for more complete testing :
+- `SESSION_ID` : a session ID for authentication test and authenticated tests
+- `PUBLIC_PROFILE` : a public profile to access
+- `PRIVATE_PROFILE` : a private profile to access
+- `STORY_PROFILE_ID` : a profile ID with a story to read
+- `STORY_PROFILE_USERNAME` : a profile username with a story to read
+- `HASHTAG` (default value : `cat`) : a hashtag to fetch
+- `LOCATION_ID` (default value : `6889842` aka. Paris) : a location to fetch
+- `POST` : a post to fetch
+- `SEARCH_PROFILE` : a profile to search for
+- `SEARCH_HASHTAG` (default value : `cats`) : a hashtag to search for
+- `SEARCH_LOCATION` (default value : `Paris`) : a location to search for
+
+Methods not covered by tests :
+- `subscribeUserPosts`
+- `subscribeHashtagPosts`
+- `subscribeAccountNotifications`
+
 ### Usage
 
 ```js
@@ -86,6 +110,7 @@ These methods allows you to get specific elements from Instagram while you know 
 - Parsing error : failed to parse data returned by Instagram (`406`)
 - No content : nothing to parse (`204`)
 - Authentication required : session ID required to access data (`401`)
+- Too many requests : rate limit exceeded (`429`)
 
 ##### Get profile by username
 
@@ -451,3 +476,7 @@ Result in array : inbox-like
 * `1.0.12` (2020-06-16) • Small fix & refactor
 * `1.0.13` (2020-07-10) • Added support for stories
 * `1.0.14` (2020-10-17) • Fixed access to own private profile
+* `1.0.15` (2020-12-19)
+	- Removed Request dependency
+	- Improved `429` detection
+	- Added unit tests
