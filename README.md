@@ -279,6 +279,7 @@ Result
 	- `hashtags` *array of hashtags*
 	- `mentions` *array of usernames*
 	- `likes` *integer*
+- `commentCount` *integer*
 - `timestamp` *epoch*
 - `link` *string* - link to the post
 
@@ -480,3 +481,14 @@ Result in array : inbox-like
 	- Removed Request dependency
 	- Improved `429` detection
 	- Added unit tests
+* `1.0.16` (2020-12-??)
+    - Added post comment count
+    - Added `getProfilePostsById` & `getProfilePosts` methods
+    - Added `getPostComments` method
+    - Added `getHashtagPosts` method
+    - Added `getLocationPostsById` method
+* `2.0.0` (202?-??-??)
+    - Refactored names
+    - Refactored scopes
+    - Refactored promises
+    - Improved unit tests coverage

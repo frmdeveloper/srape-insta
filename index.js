@@ -35,14 +35,15 @@ const self = {
 				}
 				else if(tryParse){
 					try {
-						resolve(
-							Object.values(sessionId
-								? (JSON.parse(body)['graphql'] || JSON.parse(body))
-								: Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]
-						);
+						resolve(Object.values(JSON.parse(body)['graphql'] || JSON.parse(body))[0]);
 					}
 					catch(_){
-						reject(406);
+						try {
+							resolve(Object.values(Object.values(JSON.parse(body.match(/_sharedData = (.+);/)[1])['entry_data'])[0][0]['graphql'])[0]);
+						}
+						catch(_){
+							reject(406);
+						}
 					}
 				}
 				else {
@@ -55,14 +56,91 @@ const self = {
 	search: (query, sessionId) => new Promise((resolve, reject) => self.get('web/search/topsearch', sessionId, false, { context: 'blended', query })
 		.then(body => resolve(JSON.parse(body)))
 		.catch(reject)),
-	postDetails: post => ({
+	graphQL: (query, queryHash, sessionId) => self.get('graphql/query', sessionId, undefined, {
+		query_hash: queryHash,
+		variables: query ? JSON.stringify(query) : undefined
+	}),
+	partialPost: post => ({
 		shortcode: post['node']['shortcode'],
 		caption: post['node']['edge_media_to_caption']['edges'].length > 0
 			? post['node']['edge_media_to_caption']['edges'][0]['node']['text'] : null,
 		comments: post['node']['edge_media_to_comment']['count'],
 		likes: post['node']['edge_liked_by']['count'],
 		thumbnail: post['node']['display_url']
-	})
+	}),
+	hashtagsRegex: /(?<=[\s>])#(\d*[A-Za-z_]+\d*)\b(?!;)/g,
+	usernamesRegex: /@([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?)/g,
+	postComment: comment => ({
+		user: comment['node']['owner']['username'],
+		content: comment['node']['text'],
+		timestamp: comment['node']['created_at'],
+		hashtags: comment['node']['text'].match(self.hashtagsRegex),
+		mentions: comment['node']['text'].match(self.usernamesRegex),
+		likes: comment['node']['edge_liked_by']['count']
+	}),
+	fullPost: post => {
+		const
+			caption = post['edge_media_to_caption']['edges'].length > 0
+				? post['edge_media_to_caption']['edges'][0]['node']['text'] : null,
+			username = post['owner']['username'];
+		return {
+			author: {
+				id: post['owner']['id'],
+				username,
+				name: post['owner']['full_name'],
+				pic: post['owner']['profile_pic_url'],
+				verified: post['owner']['is_verified'],
+				link: `${ insta }/${ username }`
+			},
+			location: post['location'] ? {
+				id: post['location']['id'],
+				name: post['location']['name'],
+				...(post['location']['address_json'] ? {
+					city: JSON.parse(post['location']['address_json'])['city_name']
+				} : {})
+			} : null,
+			...(post['__typename'] === 'GraphImage' ? {
+				contents: [{
+					type: 'photo',
+					url: post['display_url']
+				}]
+			} : {}),
+			...(post['__typename'] === 'GraphVideo' ? {
+				contents: [{
+					type: 'video',
+					url: post['video_url'],
+					thumbnail: post['display_url'],
+					views: post['video_view_count']
+				}]
+			} : {}),
+			...(post['__typename'] === 'GraphSidecar' ? {
+				contents: post['edge_sidecar_to_children']['edges']
+					.map(content => ({
+						type: content['node']['is_video'] ? 'video' : 'photo',
+						url: content['node']['is_video'] ? content['node']['video_url'] : content['node']['display_url'],
+						...(content['node']['is_video'] ? {
+							thumbnail: content['node']['display_url'],
+							views: content['node']['video_view_count']
+						} : {})
+					}))
+			} : {}),
+			...(post['edge_media_to_tagged_user'] ? {
+				tagged: post['edge_media_to_tagged_user']['edges']
+					.map(u => u['node']['user']['username'])
+			} : {}),
+			likes: post['edge_media_preview_like']['count'],
+			caption,
+			hashtags: caption ? caption.match(self.hashtagsRegex) : null,
+			mentions: caption ? caption.match(self.usernamesRegex) : null,
+			edited: post['caption_is_edited'] || false,
+			...(post['edge_media_preview_comment'] ? {
+				comments: post['comments_disabled'] ? null : post['edge_media_preview_comment']['edges'].map(self.postComment),
+				commentCount: post['edge_media_preview_comment']['count']
+			} : {}),
+			timestamp: post['taken_at_timestamp'],
+			link: insta + post['shortcode']
+		};
+	}
 };
 
 /*
@@ -73,7 +151,7 @@ module.exports = class Insta {
 	constructor(){
 		this.sessionId = undefined;
 		this.username = undefined;
-		this.storyQueryHash = undefined;
+		this.queryHashs = {};
 	}
 	authBySessionId(sessionId){
 		return new Promise((resolve, reject) => self.get('accounts/edit', sessionId)
@@ -123,9 +201,11 @@ module.exports = class Insta {
 		return new Promise((resolve, reject) => {
 			if(!this.sessionId) return reject(401);
 			self.get('', this.sessionId, false, { __a: undefined }).then(body => {
-				self.get('graphql/query', this.sessionId, undefined, {
-					query_hash: body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1]
-				}).then(body => {
+				self.graphQL(
+					undefined,
+					body.match(/<link rel="preload" href="\/graphql\/query\/\?query_hash=(.+)&amp;/)[1],
+					this.sessionId
+				).then(body => {
 					resolve(body['user']['feed_reels_tray']['edge_reels_tray_to_reel']['edges'].map(item => ({
 						unread: item['node']['latest_reel_media'] !== item['node']['seen'],
 						author: {
@@ -158,7 +238,7 @@ module.exports = class Insta {
 					followers: profile['edge_followed_by']['count'],
 					following: profile['edge_follow']['count'],
 					posts: profile['edge_owner_to_timeline_media']['count'],
-					lastPosts: access ? profile['edge_owner_to_timeline_media']['edges'].map(post => self.postDetails(post)) : null,
+					lastPosts: access ? profile['edge_owner_to_timeline_media']['edges'].map(post => self.partialPost(post)) : null,
 					link: insta + profile['username'],
 					...(profile['is_business_account'] ? {
 						business: profile['business_category_name']
@@ -188,13 +268,25 @@ module.exports = class Insta {
 					reject(err);
 			}));
 	}
-	_getStoryQueryHash(){
+	_getQueryHashs(){
 		return new Promise((resolve, reject) => {
-			if(this.storyQueryHash) return resolve(this.storyQueryHash);
+			if(JSON.stringify(this.queryHashs) !== '{}') return resolve(this.queryHashs);
 			self.get('', this.sessionId, false, { __a: undefined }).then(body => {
 				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(body => {
-					this.storyQueryHash = body.match(/50,[a-zA-Z]="([a-zA-Z0-9]{32})",/)[1];
-					resolve(this.storyQueryHash);
+					const [
+						,
+						[, comment],
+						,
+						[, post]
+					] = [...body.matchAll(/queryId:"([^"]+)"/g)];
+					const
+						story = body.match(/50,[a-zA-Z]="([^"]+)",/)[1];
+					this.queryHashs = {
+						story,
+						post,
+						comment
+					};
+					resolve(this.queryHashs);
 				}).catch(reject);
 			}).catch(reject);
 		});
@@ -202,13 +294,10 @@ module.exports = class Insta {
 	getProfileStoryById(id){
 		return new Promise((resolve, reject) => {
 			if(!this.sessionId) return reject(401);
-			this._getStoryQueryHash().then(queryHash => self.get('graphql/query', this.sessionId, undefined, {
-				query_hash: queryHash,
-				variables: JSON.stringify({
-					reel_ids: [ id ],
-					precomposed_overlay: false
-				})
-			}).then(data => resolve({
+			this._getQueryHashs().then(queryHashs => self.graphQL({
+				reel_ids: [ id ],
+				precomposed_overlay: false
+			}, queryHashs.story, this.sessionId).then(data => resolve({
 				unread: data['reels_media'][0]['latest_reel_media'] !== data['reels_media'][0]['seen'],
 				author: {
 					username: data['reels_media'][0]['user']['username'],
@@ -237,6 +326,15 @@ module.exports = class Insta {
 				.catch(reject);
 		});
 	}
+	async getProfilePostsById(profileId, maxCount){
+		return Object.values((await self.graphQL({
+			id: profileId,
+			first: maxCount
+		}, (await this._getQueryHashs()).post, this.sessionId))['user'])[0]['edges'].map(item => self.fullPost(item['node']));
+	}
+	async getProfilePosts(profileUsername, maxCount){
+		return this.getProfilePostsById((await this.getProfile(profileUsername)).id, maxCount);
+	}
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
 			const path = `explore/tags/${hashtag}`;
@@ -244,8 +342,8 @@ module.exports = class Insta {
 				.then(hashtag => resolve({
 					pic: hashtag['profile_pic_url'],
 					posts: hashtag['edge_hashtag_to_media']['count'],
-					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => self.postDetails(post)),
-					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => self.postDetails(post)),
+					featuredPosts: hashtag['edge_hashtag_to_top_posts']['edges'].map(post => self.partialPost(post)),
+					lastPosts: hashtag['edge_hashtag_to_media']['edges'].map(post => self.partialPost(post)),
 					link: insta + path,
 					...(this.sessionId ? {
 						user: {
@@ -274,8 +372,8 @@ module.exports = class Insta {
 						},
 						website: location['website'],
 						phone: location['phone'],
-						featuredPosts: location['edge_location_to_top_posts']['edges'].map(post => self.postDetails(post)),
-						lastPosts: location['edge_location_to_media']['edges'].map(post => self.postDetails(post)),
+						featuredPosts: location['edge_location_to_top_posts']['edges'].map(post => self.partialPost(post)),
+						lastPosts: location['edge_location_to_media']['edges'].map(post => self.partialPost(post)),
 						link: insta + path
 					});
 				})
@@ -284,76 +382,16 @@ module.exports = class Insta {
 	}
 	getPost(shortcode){
 		return new Promise((resolve, reject) => {
-			const path = `p/${shortcode}`;
-			self.get(path, this.sessionId)
-				.then(post => {
-					const
-						caption = post['edge_media_to_caption']['edges'].length > 0
-							? post['edge_media_to_caption']['edges'][0]['node']['text'] : null,
-						username = post['owner']['username'],
-						hashtagsRegex = /(?<=[\s>])#(\d*[A-Za-z_]+\d*)\b(?!;)/g,
-						usernamesRegex = /@([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?)/g;
-					resolve({
-						author: {
-							id: post['owner']['id'],
-							username,
-							name: post['owner']['full_name'],
-							pic: post['owner']['profile_pic_url'],
-							verified: post['owner']['is_verified'],
-							link: `${ insta }/${ username }`
-						},
-						location: post['location'] ? {
-							id: post['location']['id'],
-							name: post['location']['name'],
-							city: JSON.parse(post['location']['address_json'])['city_name']
-						} : null,
-						...(post['__typename'] === 'GraphImage' ? {
-							contents: [{
-								type: 'photo',
-								url: post['display_url']
-							}]
-						} : {}),
-						...(post['__typename'] === 'GraphVideo' ? {
-							contents: [{
-								type: 'video',
-								url: post['video_url'],
-								thumbnail: post['display_url'],
-								views: post['video_view_count']
-							}]
-						} : {}),
-						...(post['__typename'] === 'GraphSidecar' ? {
-							contents: post['edge_sidecar_to_children']['edges']
-								.map(content => ({
-									type: content['node']['is_video'] ? 'video' : 'photo',
-									url: content['node']['is_video'] ? content['node']['video_url'] : content['node']['display_url'],
-									...(content['node']['is_video'] ? {
-										thumbnail: content['node']['display_url'],
-										views: content['node']['video_view_count']
-									} : {})
-								}))
-						} : {}),
-						tagged: post['edge_media_to_tagged_user']['edges']
-							.map(u => u['node']['user']['username']),
-						likes: post['edge_media_preview_like']['count'],
-						caption,
-						hashtags: caption ? caption.match(hashtagsRegex) : null,
-						mentions: caption ? caption.match(usernamesRegex) : null,
-						edited: post['caption_is_edited'] || false,
-						comments: post['comments_disabled'] ? null : post[`edge_media_preview_comment`]['edges']
-							.map(c => ({
-								user: c['node']['owner']['username'],
-								content: c['node']['text'],
-								timestamp: c['node']['created_at'],
-								hashtags: c['node']['text'].match(hashtagsRegex),
-								mentions: c['node']['text'].match(usernamesRegex),
-								likes: c['node']['edge_liked_by']['count']
-							})),
-						timestamp: post['taken_at_timestamp'],
-						link: insta + path
-					});
-				})
+			self.get(`p/${shortcode}`, this.sessionId)
+				.then(post => resolve(self.fullPost(post)))
 				.catch(reject);
 		});
+	}
+	async getPostComments(shortcode, maxCount){
+		return (await self.graphQL({
+			shortcode,
+			first: maxCount
+		}, (await this._getQueryHashs()).comment, this.sessionId))['shortcode_media']['edge_media_to_parent_comment']['edges'].map(self.postComment);
 	}
 	searchProfile(query){
 		return new Promise((resolve, reject) => self.search(query, this.sessionId)

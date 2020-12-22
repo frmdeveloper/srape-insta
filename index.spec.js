@@ -7,6 +7,7 @@ const Instagram = require('.');
 const {
 	SESSION_ID,
 	PUBLIC_PROFILE,
+	PUBLIC_PROFILE_ID,
 	PRIVATE_PROFILE,
 	STORY_PROFILE_ID,
 	STORY_PROFILE_USERNAME,
@@ -15,7 +16,8 @@ const {
 	POST,
 	SEARCH_PROFILE,
 	SEARCH_HASHTAG = 'cats',
-	SEARCH_LOCATION = 'Paris'
+	SEARCH_LOCATION = 'Paris',
+	GET_COUNT = 20
 } = process.env;
 
 chai.use(require('chai-as-promised'));
@@ -80,6 +82,15 @@ describe('scraper-instagram', () => {
 		(STORY_PROFILE_ID ? it : it.skip)('gets story by ID', () => expect(client.getProfileStoryById(STORY_PROFILE_ID)).to.be.fulfilled).timeout(5000);
 		(STORY_PROFILE_USERNAME ? it : it.skip)('gets story by username', () => expect(client.getProfileStory(STORY_PROFILE_USERNAME)).to.be.fulfilled).timeout(5000);
 	});
+	(SESSION_ID ? describe : describe.skip)('Get profile posts', () => {
+		let client;
+		before(async () => {
+			client = new Instagram();
+			await client.authBySessionId(SESSION_ID);
+		});
+		(PUBLIC_PROFILE ? it : it.skip)('gets posts by ID', () => expect(client.getProfilePostsById(PUBLIC_PROFILE_ID, +GET_COUNT)).to.be.fulfilled).timeout(5000);
+		(PUBLIC_PROFILE_ID ? it : it.skip)('gets posts by username', () => expect(client.getProfilePosts(PUBLIC_PROFILE, +GET_COUNT)).to.be.fulfilled).timeout(5000);
+	});
 	describe('Get hashtag', () => {
 		let client;
 		before(() => client = new Instagram());
@@ -94,6 +105,10 @@ describe('scraper-instagram', () => {
 		let client;
 		before(() => client = new Instagram());
 		it('gets post', () => expect(client.getPost(POST)).to.be.fulfilled);
+		(SESSION_ID ? it : it.skip)('gets post comments', () => {
+			before(async () => await client.authBySessionId(SESSION_ID));
+			expect(client.getPostComments(POST, +GET_COUNT)).to.be.fulfilled;
+		});
 	});
 	describe('Search', () => {
 		let client;
