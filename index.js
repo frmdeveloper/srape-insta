@@ -82,11 +82,13 @@ const self = {
 			? post['node']['edge_media_to_caption']['edges'][0]['node']['text'] : null,
 		comments: post['node']['edge_media_to_comment']['count'],
 		likes: post['node']['edge_liked_by']['count'],
-		thumbnail: post['node']['display_url']
+		thumbnail: post['node']['display_url'],
+		timestamp: post['node']['taken_at_timestamp']
 	}),
 	hashtagsRegex: /(?<=[\s>])#(\d*[A-Za-z_]+\d*)\b(?!;)/g,
 	usernamesRegex: /@([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?)/g,
 	postComment: comment => ({
+		id: comment['node']['id'],
 		user: comment['node']['owner']['username'],
 		content: comment['node']['text'],
 		timestamp: comment['node']['created_at'],
@@ -98,8 +100,10 @@ const self = {
 		const
 			caption = post['edge_media_to_caption']['edges'].length > 0
 				? post['edge_media_to_caption']['edges'][0]['node']['text'] : null,
-			username = post['owner']['username'];
+			username = post['owner']['username'],
+			shortcode = post['shortcode'];
 		return {
+			shortcode,
 			author: {
 				id: post['owner']['id'],
 				username,
@@ -154,8 +158,8 @@ const self = {
 				commentCount: post['edge_media_preview_comment']['count']
 			} : {}),
 			timestamp: post['taken_at_timestamp'],
-			link: insta + post['shortcode']
-		};
+			link: insta + shortcode
+		}
 	}
 };
 
@@ -241,9 +245,12 @@ module.exports = class Insta {
 	getProfile(username = this.username, anonymous = false){
 		return new Promise((resolve, reject) => self.get(username, anonymous ? null : this.sessionId)
 			.then(profile => {
-				const access = !profile['is_private'] || !!profile['followed_by_viewer'] || profile['username'] === this.username;
+				const
+					id = profile['id'],
+					access = !profile['is_private'] || !!profile['followed_by_viewer'] || profile['username'] === this.username;
+				profileIds[username] = id;
 				resolve({
-					id: profile['id'],
+					id,
 					name: profile['full_name'],
 					pic: profile['profile_pic_url_hd'],
 					bio: profile['biography'],
