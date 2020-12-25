@@ -164,6 +164,11 @@ const self = {
 };
 
 /*
+Memoization
+ */
+const profileIds = {};
+
+/*
 Class public properties & methods
  */
 
@@ -291,28 +296,40 @@ module.exports = class Insta {
 					reject(err);
 			}));
 	}
-	_getQueryHashs(){
-		return new Promise((resolve, reject) => {
-			if(JSON.stringify(this.queryHashs) !== '{}') return resolve(this.queryHashs);
-			self.get('', this.sessionId, false, { __a: undefined }).then(body => {
-				self.get(body.match(/\/(static\/bundles\/.+\/Consumer\.js\/.+\.js)/)[1], undefined, false).then(body => {
-					const [
-						,
-						[, comment],
-						,
-						[, post]
-					] = [...body.matchAll(/queryId:"([^"]+)"/g)];
-					const
-						story = body.match(/50,[a-zA-Z]="([^"]+)",/)[1];
-					this.queryHashs = {
-						story,
-						post,
-						comment
-					};
-					resolve(this.queryHashs);
-				}).catch(reject);
-			}).catch(reject);
-		});
+	async _getProfileId(username){
+		if(!profileIds[username])
+			profileIds[username] = (await this.getProfile(username)).id;
+		return profileIds[username];
+	}
+	async _getQueryHashs(){
+		if(JSON.stringify(this.queryHashs) !== '{}') return this.queryHashs;
+		const
+			{
+				Consumer,
+				TagPageContainer,
+				LocationPageContainer
+			} = Object.fromEntries([
+				...(await self.get('', this.sessionId, false, { __a: undefined }))
+					.matchAll(/static\/bundles\/.+?\/(.+?)\.js\/.+?\.js/g)
+			].map(_ => _.reverse())),
+			mainScriptBody = await self.get(Consumer, undefined, false),
+			hashtagScriptBody = await self.get(TagPageContainer, undefined, false),
+			locationScriptBody = await self.get(LocationPageContainer, undefined, false),
+			localQueryIdRegex = /queryId:"([^"]+)"/;
+		const [
+			,
+			[, comment],
+			,
+			[, post]
+		] = [...mainScriptBody.matchAll(/queryId:"([^"]+)"/g)];
+		this.queryHashs = {
+			story: mainScriptBody.match(/50,[a-zA-Z]="([^"]+)",/)[1],
+			post,
+			comment,
+			hashtag: hashtagScriptBody.match(localQueryIdRegex)[1],
+			location: locationScriptBody.match(localQueryIdRegex)[1]
+		};
+		return this.queryHashs;
 	}
 	getProfileStoryById(id){
 		return new Promise((resolve, reject) => {
@@ -341,22 +358,31 @@ module.exports = class Insta {
 	}
 	getProfileStory(username = this.username){
 		return new Promise((resolve, reject) => {
-			this.getProfile(username)
-				.then(({ id }) =>
+			this._getProfileId(username)
+				.then(id =>
 					this.getProfileStoryById(id)
 						.then(resolve)
 						.catch(reject))
 				.catch(reject);
 		});
 	}
-	async getProfilePostsById(profileId, maxCount){
-		return Object.values((await self.graphQL({
+	async getProfilePostsById(profileId, maxCount, pageId){
+		const res = await self.graphQL({
 			id: profileId,
-			first: maxCount
-		}, (await this._getQueryHashs()).post, this.sessionId))['user'])[0]['edges'].map(item => self.fullPost(item['node']));
+			first: maxCount,
+			after: pageId
+		}, (await this._getQueryHashs()).post, this.sessionId);
+		return Object.assign(
+			res['user']['edge_owner_to_timeline_media']['edges'].map(item => self.fullPost(item['node'])),
+			{
+				nextPageId: res['user']['edge_owner_to_timeline_media']['page_info']['has_next_page']
+					? res['user']['edge_owner_to_timeline_media']['page_info']['end_cursor']
+					: undefined
+			}
+		);
 	}
-	async getProfilePosts(profileUsername, maxCount){
-		return this.getProfilePostsById((await this.getProfile(profileUsername)).id, maxCount);
+	async getProfilePosts(profileUsername, maxCount, pageId){
+		return this.getProfilePostsById(await this._getProfileId(profileUsername), maxCount, pageId);
 	}
 	getHashtag(hashtag){
 		return new Promise((resolve, reject) => {
@@ -376,6 +402,21 @@ module.exports = class Insta {
 				}))
 				.catch(reject);
 		});
+	}
+	async getHashtagPosts(hashtag, maxCount, pageId){
+		const res = await self.graphQL({
+			tag_name: hashtag,
+			first: maxCount,
+			after: pageId
+		}, (await this._getQueryHashs()).hashtag, this.sessionId);
+		return Object.assign(
+			res['hashtag']['edge_hashtag_to_media']['edges'].map(post => self.partialPost(post)),
+			{
+				nextPageId: res['hashtag']['edge_hashtag_to_media']['page_info']['has_next_page']
+					? res['hashtag']['edge_hashtag_to_media']['page_info']['end_cursor']
+					: undefined
+			}
+		);
 	}
 	getLocation(id){
 		return new Promise((resolve, reject) => {
@@ -403,6 +444,21 @@ module.exports = class Insta {
 				.catch(reject);
 		});
 	}
+	async getLocationPostsById(locationId, maxCount, pageId){
+		const res = await self.graphQL({
+			id: locationId,
+			first: maxCount,
+			after: pageId
+		}, (await this._getQueryHashs()).location, this.sessionId);
+		return Object.assign(
+			res['location']['edge_location_to_media']['edges'].map(post => self.partialPost(post)),
+			{
+				nextPageId: res['location']['edge_location_to_media']['page_info']['has_next_page']
+					? res['location']['edge_location_to_media']['page_info']['end_cursor']
+					: undefined
+			}
+		);
+	}
 	getPost(shortcode){
 		return new Promise((resolve, reject) => {
 			self.get(`p/${shortcode}`, this.sessionId)
@@ -410,11 +466,20 @@ module.exports = class Insta {
 				.catch(reject);
 		});
 	}
-	async getPostComments(shortcode, maxCount){
-		return (await self.graphQL({
+	async getPostComments(shortcode, maxCount, pageId){
+		const res = await self.graphQL({
 			shortcode,
-			first: maxCount
-		}, (await this._getQueryHashs()).comment, this.sessionId))['shortcode_media']['edge_media_to_parent_comment']['edges'].map(self.postComment);
+			first: maxCount,
+			after: pageId
+		}, (await this._getQueryHashs()).comment, this.sessionId);
+		return Object.assign(
+			res['shortcode_media']['edge_media_to_parent_comment']['edges'].map(self.postComment),
+			{
+				nextPageId: res['shortcode_media']['edge_media_to_parent_comment']['page_info']['has_next_page']
+					? res['shortcode_media']['edge_media_to_parent_comment']['page_info']['end_cursor']
+					: undefined
+			}
+		);
 	}
 	searchProfile(query){
 		return new Promise((resolve, reject) => self.search(query, this.sessionId)
