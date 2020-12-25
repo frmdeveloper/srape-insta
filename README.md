@@ -483,13 +483,23 @@ Result in array : inbox-like
 	- Improved `429` detection
 	- Added unit tests
 * `1.0.16` (2020-12-??)
-    - Added post comment count
+    - Added full post `commentCount` property
+	- Added partial post `timestamp` property
+	- Added post comment `id` property
+	- Added profile IDs memoization
     - Added `getProfilePostsById` & `getProfilePosts` methods
     - Added `getPostComments` method
     - Added `getHashtagPosts` method
     - Added `getLocationPostsById` method
+	- Added `409` detection
+    - Improved `401` detection
+	- Restored full post `shortcode` property
 * `2.0.0` (202?-??-??)
     - Refactored names
     - Refactored scopes
     - Refactored promises
+    - Refactored errors
+    - Refactored indents
+	- Renamed `getLocation` to `getLocationById`
     - Improved unit tests coverage
+	- Added JSDoc
