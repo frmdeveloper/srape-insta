@@ -95,11 +95,19 @@ describe('scraper-instagram', () => {
 		let client;
 		before(() => client = new Instagram());
 		it('gets hashtag', () => expect(client.getHashtag(HASHTAG)).to.be.fulfilled).timeout(5000);
+		(SESSION_ID ? it : it.skip)('gets hashtag posts', () => {
+			before(async () => await client.authBySessionId(SESSION_ID));
+			expect(client.getHashtagPosts(HASHTAG, +GET_COUNT)).to.be.fulfilled;
+		});
 	});
 	describe('Get location', () => {
 		let client;
 		before(() => client = new Instagram());
 		it('gets location by ID', () => expect(client.getLocation(LOCATION_ID)).to.be.fulfilled).timeout(8000);
+		(SESSION_ID ? it : it.skip)('gets location posts by ID', () => {
+			before(async () => await client.authBySessionId(SESSION_ID));
+			expect(client.getLocationPostsById(LOCATION_ID, +GET_COUNT)).to.be.fulfilled;
+		});
 	});
 	(POST ? describe : describe.skip)('Get post', () => {
 		let client;
