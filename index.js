@@ -31,7 +31,23 @@ const self = {
 			res.on('data', chunk => body += chunk);
 			res.on('end', () => {
 				if(res.statusCode !== 200){
-					reject(res.statusCode === 302 && res.headers.location === insta + 'accounts/login/' ? 429 : res.statusCode);
+					switch(res.statusCode){
+						case 302: {
+							switch(res.headers.location){
+								case insta + 'accounts/login/':
+									return reject(429);
+								case insta + 'accounts/login/?next=/accounts/edit/%3F__a%3D1':
+									return reject(401);
+								case insta + 'challenge/?next=/accounts/edit/%253F__a%253D1':
+									return reject(409);
+								default:
+									console.log(res.headers.location);
+									reject(res.statusCode);
+							}
+							break;
+						}
+						default: reject(res.statusCode);
+					}
 				}
 				else if(tryParse){
 					try {

@@ -111,6 +111,7 @@ These methods allows you to get specific elements from Instagram while you know 
 - No content : nothing to parse (`204`)
 - Authentication required : session ID required to access data (`401`)
 - Too many requests : rate limit exceeded (`429`)
+- Conflict : automation detected, password reset required (`409`)
 
 ##### Get profile by username
 
