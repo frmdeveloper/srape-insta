@@ -572,5 +572,6 @@ Result in array : inbox-like
     - Refactored errors
     - Refactored indents
 	- Renamed `getLocation` to `getLocationById`
+    - Reverse subscribe methods `post` & `error` parameters
     - Improved unit tests coverage
 	- Added JSDoc
