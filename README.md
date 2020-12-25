@@ -553,7 +553,7 @@ Result in array : inbox-like
 	- Removed Request dependency
 	- Improved `429` detection
 	- Added unit tests
-* `1.0.16` (2020-12-??)
+* `1.0.16` (2020-12-25)
     - Added full post `commentCount` property
 	- Added partial post `timestamp` property
 	- Added post comment `id` property
