@@ -284,6 +284,77 @@ Result
 - `timestamp` *epoch*
 - `link` *string* - link to the post
 
+#### Paginated getters (require authentication)
+
+Paginated getters allows bulk data downloads.
+
+Params :
+- `maxCount` *integer* - max number of items to return
+- `pageId` *string* (optional) - page navigation identifier
+
+Result : array + `nextPageId` property
+
+Sample :
+```js
+(async () => {
+	const page0 = await somePaginatedGetter(someId, 50);
+	const page1 = await somePaginatedGetter(someId, 50, page0.nextPageId);
+	const page2 = await somePaginatedGetter(someId, 50, page1.nextPageId);
+})();
+```
+
+The `pageId`/`nextPageId` property may contain a string of digits, a base64 string, or a JSON string, but always must be leaved untouched.
+
+##### Get profile posts
+
+Result in array : full post object
+
+###### Using profile ID
+
+```js
+InstaClient.getProfilePostsById(profileId, maxCount, pageId)
+    .then(posts => console.log(posts))
+    	.catch(err => console.error(err));
+```
+
+###### Using profile username (will automatically request profile ID)
+
+```js
+InstaClient.getProfilePosts(profileUsername, maxCount, pageId)
+    .then(posts => console.log(posts))
+    	.catch(err => console.error(err));
+```
+
+##### Get post comments
+
+```js
+InstaClient.getPostComments(shortcode, maxCount, pageId)
+	.then(posts => console.log(posts))
+	.catch(err => console.error(err));
+```
+
+Result in array : comment object
+
+##### Get hashtag posts
+
+```js
+InstaClient.getHashtagPosts(hashtag, maxCount, pageId)
+	.then(posts => console.log(posts))
+	.catch(err => console.error(err));
+```
+
+Result in array : partial post object
+
+##### Get location posts
+
+```js
+InstaClient.getLocationPostsById(locationId, maxCount, pageId)
+	.then(posts => console.log(posts))
+	.catch(err => console.error(err));
+```
+
+Result in array : partial post object
+
 #### Search
 
 ##### Search profile
