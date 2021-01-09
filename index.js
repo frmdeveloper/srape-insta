@@ -158,7 +158,7 @@ const self = {
 				commentCount: post['edge_media_preview_comment']['count']
 			} : {}),
 			timestamp: post['taken_at_timestamp'],
-			link: insta + shortcode
+			link: insta + 'p/' + shortcode
 		}
 	}
 };
