@@ -41,7 +41,6 @@ const self = {
 								case insta + 'challenge/?next=/accounts/edit/%253F__a%253D1':
 									return reject(409);
 								default:
-									console.log(res.headers.location);
 									reject(res.statusCode);
 							}
 							break;
