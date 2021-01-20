@@ -570,6 +570,7 @@ Result in array : inbox-like
 * `1.0.17` (2021-01-2?)
   	- Fixed error on empty profile story
     - Fixed `409` detection
+  	- Added profile story external link
 * `2.0.0` (202?-??-??)
     - Refactored names
     - Refactored scopes

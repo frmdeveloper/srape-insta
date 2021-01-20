@@ -351,7 +351,10 @@ module.exports = class Insta {
 					url: item['is_video'] ? item['video_resources'][0]['src'] : item['display_url'],
 					type: item['is_video'] ? 'video' : 'photo',
 					timestamp: item['taken_at_timestamp'],
-					expirationTimestamp: item['expiring_at_timestamp']
+					expirationTimestamp: item['expiring_at_timestamp'],
+					...(item['story_cta_url'] ? {
+						externalLink: item['story_cta_url']
+					} : {})
 				}))
 			} : null)).catch(reject)).catch(reject);
 		});
