@@ -38,10 +38,11 @@ const self = {
 									return reject(429);
 								case insta + 'accounts/login/?next=/accounts/edit/%3F__a%3D1':
 									return reject(401);
-								case insta + 'challenge/?next=/accounts/edit/%253F__a%253D1':
-									return reject(409);
-								default:
+								default: {
+									if(res.headers.location.startsWith(insta + 'challenge/?next='))
+										return reject(409);
 									reject(res.statusCode);
+								}
 							}
 							break;
 						}

@@ -569,6 +569,7 @@ Result in array : inbox-like
 	- Restored full post `shortcode` property
 * `1.0.17` (2021-01-2?)
   	- Fixed error on empty profile story
+    - Fixed `409` detection
 * `2.0.0` (202?-??-??)
     - Refactored names
     - Refactored scopes
