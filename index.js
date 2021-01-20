@@ -337,7 +337,7 @@ module.exports = class Insta {
 			this._getQueryHashs().then(queryHashs => self.graphQL({
 				reel_ids: [ id ],
 				precomposed_overlay: false
-			}, queryHashs.story, this.sessionId).then(data => resolve({
+			}, queryHashs.story, this.sessionId).then(data => resolve(data['reels_media'][0] ? {
 				unread: data['reels_media'][0]['latest_reel_media'] !== data['reels_media'][0]['seen'],
 				author: {
 					username: data['reels_media'][0]['user']['username'],
@@ -353,7 +353,7 @@ module.exports = class Insta {
 					timestamp: item['taken_at_timestamp'],
 					expirationTimestamp: item['expiring_at_timestamp']
 				}))
-			})).catch(reject)).catch(reject);
+			} : null)).catch(reject)).catch(reject);
 		});
 	}
 	getProfileStory(username = this.username){

@@ -182,6 +182,8 @@ InstaClient.getProfileStory(username)
     - `timestamp` *epoch*
     - `expirationTimestamp` *epoch*
 
+*Those methods will return `null` when a profile has no story.*
+
 Note : calling this method will not mark the story as read.
 
 ##### Get hashtag
@@ -565,6 +567,8 @@ Result in array : inbox-like
 	- Added `409` detection
     - Improved `401` detection
 	- Restored full post `shortcode` property
+* `1.0.17` (2021-01-2?)
+  	- Fixed error on empty profile story
 * `2.0.0` (202?-??-??)
     - Refactored names
     - Refactored scopes
