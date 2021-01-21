@@ -567,7 +567,7 @@ Result in array : inbox-like
 	- Added `409` detection
     - Improved `401` detection
 	- Restored full post `shortcode` property
-* `1.0.17` (2021-01-2?)
+* `1.0.17` (2021-01-21)
   	- Fixed error on empty profile story
     - Fixed `409` detection
   	- Added profile story external link
@@ -581,3 +581,5 @@ Result in array : inbox-like
     - Reverse subscribe methods `post` & `error` parameters
     - Improved unit tests coverage
 	- Added JSDoc
+	- Added links to partial post, hashtag & location
+	- Fixed post author link
