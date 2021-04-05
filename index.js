@@ -324,6 +324,7 @@ module.exports = class Insta {
 		] = [...mainScriptBody.matchAll(/queryId:"([^"]+)"/g)];
 		this.queryHashs = {
 			story: mainScriptBody.match(/50,[a-zA-Z]="([^"]+)",/)[1],
+			anyPost: mainScriptBody.match(/RETRY_TEXT.+var [a-zA-Z]="([^"]+)",/)[1],
 			post,
 			comment,
 			hashtag: hashtagScriptBody.match(localQueryIdRegex)[1],
@@ -462,11 +463,20 @@ module.exports = class Insta {
 			}
 		);
 	}
-	getPost(shortcode){
+	getPost(shortcode, { useGraphQL = false }){
 		return new Promise((resolve, reject) => {
-			self.get(`p/${shortcode}`, this.sessionId)
-				.then(post => resolve(self.fullPost(post)))
-				.catch(reject);
+			if(useGraphQL){
+				this._getQueryHashs().then(queryHashs => {
+					self.graphQL({ shortcode }, queryHashs.anyPost, this.sessionId)
+						.then(data => resolve(self.fullPost(data['shortcode_media'])))
+						.catch(reject);
+				});
+			}
+			else {
+				self.get(`p/${shortcode}`, this.sessionId)
+					.then(post => resolve(self.fullPost(post)))
+					.catch(reject);
+			}
 		});
 	}
 	async getPostComments(shortcode, maxCount, pageId){
