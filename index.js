@@ -463,7 +463,7 @@ module.exports = class Insta {
 			}
 		);
 	}
-	getPost(shortcode, { useGraphQL = false }){
+	getPost(shortcode, { useGraphQL = false } = {}){
 		return new Promise((resolve, reject) => {
 			if(useGraphQL){
 				this._getQueryHashs().then(queryHashs => {
