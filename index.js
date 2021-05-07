@@ -306,13 +306,15 @@ module.exports = class Insta {
 		const
 			{
 				Consumer,
+				ConsumerLibCommons,
 				TagPageContainer,
-				LocationPageContainer
+				LocationPageContainer,
 			} = Object.fromEntries([
 				...(await self.get('', this.sessionId, false, { __a: undefined }))
 					.matchAll(/static\/bundles\/.+?\/(.+?)\.js\/.+?\.js/g)
 			].map(_ => _.reverse())),
 			mainScriptBody = await self.get(Consumer, undefined, false),
+			secondaryScriptBody = await self.get(ConsumerLibCommons, undefined, false),
 			hashtagScriptBody = await self.get(TagPageContainer, undefined, false),
 			locationScriptBody = await self.get(LocationPageContainer, undefined, false),
 			localQueryIdRegex = /queryId:"([^"]+)"/;
@@ -323,9 +325,9 @@ module.exports = class Insta {
 			[, post]
 		] = [...mainScriptBody.matchAll(/queryId:"([^"]+)"/g)];
 		this.queryHashs = {
-			story: mainScriptBody.match(/50,[a-zA-Z]="([^"]+)",/)[1],
+			// story: mainScriptBody.match(/50,[a-zA-Z]="([^"]+)",/)[1],
 			anyPost: mainScriptBody.match(/RETRY_TEXT.+var [a-zA-Z]="([^"]+)",/)[1],
-			post,
+			post: secondaryScriptBody.match(/queryId:"([^"]+)"/)[1],
 			comment,
 			hashtag: hashtagScriptBody.match(localQueryIdRegex)[1],
 			location: locationScriptBody.match(localQueryIdRegex)[1]
