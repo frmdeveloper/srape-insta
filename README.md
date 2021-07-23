@@ -1,4 +1,4 @@
-# ig-scraper
+# scrape-insta
 
 Scrape data from Instagram without applying for the authenticated API.
 
@@ -12,19 +12,14 @@ Scrape data from Instagram without applying for the authenticated API.
 
 ### Install
 
-From [npm](https://www.npmjs.com/package/scraper-instagram)
+From [npm](https://www.npmjs.com/package/scrape-insta)
 
-`yarn add scraper-instagram`
+masukkan tulisan dibawah ke package.json<br>
+`"scrape-insta": "latest"`
 
-or
+atau ketik di terminal / command prompt
 
-`npm i scraper-instagram --save`
-
-### Test
-
-- `git clone https://git.kaki87.net/KaKi87/ig-scraper.git`
-- `yarn install` or `npm install`
-- `yarn test` or `npm run test`
+`npm install scrape-insta`
 
 Optional environment variables for more complete testing :
 - `SESSION_ID` : a session ID for authentication test and authenticated tests
