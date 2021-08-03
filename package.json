@@ -1,6 +1,6 @@
 {
   "name": "scrape-insta",
-  "version": "1.0.17",
+  "version": "1.0.19",
   "description": "Instagram scraper without authenticated API",
   "keywords": [
     "insta",
@@ -16,7 +16,7 @@
   "author": {
     "name": "Fauzan Rifki Maulana",
     "email": "frmdeveloper9@gmail.com",
-    "url": "frm.frmdev.rf.gd"
+    "url": "www.frm.rf.gd"
   },
   "main": "index.js",
   "repository": {
