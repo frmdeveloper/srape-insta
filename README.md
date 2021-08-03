@@ -1,6 +1,8 @@
 # scrape-insta
 
-Scrape data from Instagram without applying for the authenticated API.
+Mengikis data dari Instagram tanpa mendaftar ke API yang diautentikasi.
+By FRM Developer
+dari [scraper-instagram](https://www.npmjs.com/package/scraper-instagram)
 
 ## Getting started
 
@@ -12,7 +14,7 @@ Scrape data from Instagram without applying for the authenticated API.
 
 ### Install
 
-From [npm](https://www.npmjs.com/package/scrape-insta)
+DARI [npm](https://www.npmjs.com/package/scrape-insta)
 
 masukkan tulisan dibawah ke package.json<br>
 `"scrape-insta": "latest"`
@@ -21,43 +23,50 @@ atau ketik di terminal / command prompt
 
 `npm install scrape-insta`
 
-Optional environment variables for more complete testing :
-- `SESSION_ID` : a session ID for authentication test and authenticated tests
-- `PUBLIC_PROFILE` : a public profile to access
-- `PRIVATE_PROFILE` : a private profile to access
-- `STORY_PROFILE_ID` : a profile ID with a story to read
-- `STORY_PROFILE_USERNAME` : a profile username with a story to read
-- `HASHTAG` (default value : `cat`) : a hashtag to fetch
-- `LOCATION_ID` (default value : `6889842` aka. Paris) : a location to fetch
-- `POST` : a post to fetch
-- `SEARCH_PROFILE` : a profile to search for
-- `SEARCH_HASHTAG` (default value : `cats`) : a hashtag to search for
-- `SEARCH_LOCATION` (default value : `Paris`) : a location to search for
+Variabel lingkungan opsional untuk pengujian yang lebih lengkap:
+- `SESSION_ID` : ID sesi untuk uji autentikasi dan uji autentikasi
+- `PUBLIC_PROFILE` : profil publik untuk diakses
+- `PRIVATE_PROFILE` : profil pribadi untuk diakses
+- `STORY_PROFILE_ID` : ID profil dengan cerita untuk dibaca
+- `STORY_PROFILE_USERNAME` : nama pengguna profil dengan cerita untuk dibaca
+- `HASHTAG` (default value : `cat`) : tagar untuk diambil
+- `LOCATION_ID` (default value : `6889842` aka. Paris) : lokasi untuk diambil
+- `POST` : sebuah pos untuk diambil
+- `SEARCH_PROFILE` : profil untuk dicari
+- `SEARCH_HASHTAG` (default value : `cats`) : hashtag untuk mencari
+- `SEARCH_LOCATION` (default value : `Paris`) : lokasi untuk mencari
 
-Methods not covered by tests :
+Metode yang tidak tercakup oleh tes:
 - `subscribeUserPosts`
 - `subscribeHashtagPosts`
 - `subscribeAccountNotifications`
 
-### Usage
+### Penggunaan
 
 ```js
-const Insta = require('scraper-instagram');
+const Insta = require('scrape-insta');
 const InstaClient = new Insta();
 ```
 
-#### Authentication
+#### Otentikasi
 
-Authentication allows you to access private profile as long as you follow them.
+Otentikasi memungkinkan Anda untuk mengakses profil pribadi selama Anda mengikuti mereka.
 
-##### Importing your session ID
-
-- Go to instagram.com
-- Login *(if not already logged in)*
+##### Mengimpor ID sesi Anda dengan desktop
+- Buka [instagram.com](https://instagram.com)
+- Login *(jika belum login)*
 - Open development tools *(`Ctrl` + `Shift` + `I`)*
-- Get the `sessionid` cookie value
-	- For chromium-based browsers : `application` tab
-	- For firefox-based browsers : `storage` tab
+- Ambil `sessionid` cookie value
+	- Untuk browser berbasis chromium : `application` tab
+	- Untuk browser berbasis firefox : `storage` tab
+
+##### Mengimpor ID sesi Anda dengan Android
+- Buka [instagram.com](https://instagram.com) di browser
+- Login *(jika belum login)*
+- Buka aplikasi HTTP Canary dan aktifkan pemantauan
+- Buka browser dan kunjungi [instagram.com](https://instagram.com)
+- Buka HTTP Canary dan hentikan pemantauan
+- Cari instagram.com di http canary dan cari cookie
 
 ##### Code
 
@@ -67,7 +76,7 @@ InstaClient.authBySessionId(yourSessionId)
 	.catch(err => console.error(err));
 ```
 
-If authentication is successfull, you'll get the form data from `accounts/edit` :
+Jika otentikasi berhasil, Anda akan mendapatkan data formulir dari `accounts/edit` :
 
 ```json
 {
@@ -89,17 +98,17 @@ If authentication is successfull, you'll get the form data from `accounts/edit` 
 }
 ```
 
-If your session ID is invalid, you'll get the `401` error.
+Jika ID sesi Anda tidak valid, Anda akan mendapatkan `401` error.
 
-*Username/password authentication may be supported in the future.*
+*Otentikasi nama pengguna/kata sandi mungkin didukung di masa mendatang.*
 
 #### Get
 
-These methods allows you to get specific elements from Instagram while you know exactly what you're looking for.
+Metode ini memungkinkan Anda untuk mendapatkan elemen tertentu dari Instagram sementara Anda tahu persis apa yang Anda cari.
 
 ##### Errors handling
 
-`get` may return errors in the two following cases.
+`get` dapat mengembalikan kesalahan dalam dua kasus berikut.
 
 - Request error : failed to get data from Instagram (HTTP code)
 - Parsing error : failed to parse data returned by Instagram (`406`)
@@ -108,7 +117,7 @@ These methods allows you to get specific elements from Instagram while you know 
 - Too many requests : rate limit exceeded (`429`)
 - Conflict : automation detected, password reset required (`409`)
 
-##### Get profile by username
+##### Dapatkan profil berdasarkan nama pengguna
 
 ```js
 InstaClient.getProfile(username)
