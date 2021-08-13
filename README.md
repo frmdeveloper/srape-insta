@@ -63,7 +63,7 @@ Otentikasi memungkinkan Anda untuk mengakses profil pribadi selama Anda mengikut
 ##### Mengimpor ID sesi Anda dengan Android
 - Buka [instagram.com](https://instagram.com) di browser
 - Login *(jika belum login)*
-- Buka aplikasi HTTP Canary dan aktifkan pemantauan
+- Buka aplikasi [HTTP Canary](https://www.mediafire.com/file/ou5zjwx08pak7et/HttpCanary_3.3.6_%2528SFILE.MOBI%2529.apk/file) dan aktifkan pemantauan
 - Buka browser dan kunjungi [instagram.com](https://instagram.com)
 - Buka HTTP Canary dan hentikan pemantauan
 - Cari instagram.com di http canary dan cari cookie
